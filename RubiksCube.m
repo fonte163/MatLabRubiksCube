@@ -25,13 +25,7 @@ pos = [[[0,1,1,0], [3,3,2,2], [3,3,3,3]],  [[1,2,2,1], [3,3,2,2], [3,3,3,3]], [[
 
 initdraw(pos, w);
 k = 0;
-while true
-    view([k 45]);
-    k = k + 20;
-    if k == 360, k = 0; end
-    drawnow;
-    pause(1);
-end
+view([30 45]);
 
 
 
