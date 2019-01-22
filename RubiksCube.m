@@ -7,14 +7,6 @@ function RubiksCube()
 % mögliche Farben
 c = [[1,1,1]; [1,0,0]; [0,0,1]; [1,0.6,0]; [0,1,0]; [1,1,0]];
 
-% w speichert Farben, standardmäßig gelöst
-w=[];
-for i = 1:6
-	for j = 1:8
-		w(i,j,:) = c(i,:);
-	end
-end
-
 % pos speichert mögliche Flächenositionen
 pos = [[[0,1,1,0], [3,3,2,2], [3,3,3,3]],  [[1,2,2,1], [3,3,2,2], [3,3,3,3]], [[2,3,3,2],[3,3,2,2],[3,3,3,3]], [[2,3,3,2],[2,2,1,1],[3,3,3,3]], [[2,3,3,2],[1,1,0,0],[3,3,3,3]], [[1,2,2,1],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[2,2,1,1],[3,3,3,3]]; % weiß
 	   [[0,1,1,0], [0,0,0,0], [3,3,2,2]],  [[1,2,2,1], [0,0,0,0], [3,3,2,2]], [[2,3,3,2],[0,0,0,0],[3,3,2,2]], [[2,3,3,2],[0,0,0,0],[2,2,1,1]], [[2,3,3,2],[0,0,0,0],[1,1,0,0]], [[1,2,2,1],[0,0,0,0],[1,1,0,0]], [[0,1,1,0],[0,0,0,0],[1,1,0,0]], [[0,1,1,0],[0,0,0,0],[2,2,1,1]]; % rot
@@ -37,56 +29,91 @@ arrows = [2.5,  2.1,  2.9,   1.9,  1.1,  1.1,   3.1, 3.1, 3.1,   2.5,  2.1,  2.9
          -0.1, -0.1, -0.1,   2.5,  2.9,  2.1,   1.9, 1.1, 1.1,   1.9,  1.1,  1.1,   2.5,  2.9,  2.1,   3.1, 3.1, 3.1; % B'
          ];
 
+w=[];
+for i = 1:6
+	for j = 1:8
+		w(i,j,:) = c(i,:);
+	end
+end
+
 % also z.B. sollte pos(1,1) die Eckpunke der oberen linken weißen Fläche geben, genauer gesagt [0,1,1,0] als x-Koordinaten, [3,3,2,2] als y und [3,3,3,3] als z
 figure('Name','Rubiks Cube','NumberTitle','off','MenuBar','none');
-elon = uicontrol('Style', 'slider', 'Value', 0.9, 'Callback', @rotateview, 'Position', [20 20 100 20]);
-azim = uicontrol('Style', 'slider', 'Value', 0.625, 'Callback', @rotateview, 'Position', [20 40 100 20]);
-uicontrol('Style', 'text', 'Position', [130 20 60 20], 'String', 'elongation');
-uicontrol('Style', 'text', 'Position', [130 40 50 20], 'String', 'azimuth');
-rotateview;
-axis off
-axis equal
-% Mitten
-patch([1,2,2,1],[2,2,1,1],[3,3,3,3],'w');
-patch([1,2,2,1],[0,0,0,0],[2,2,1,1],'r');
-patch([3,3,3,3],[1,2,2,1],[2,2,1,1],'b');
-patch([2,1,1,2],[3,3,3,3],[2,2,1,1],[1,0.6,0]);
-patch([0,0,0,0],[2,1,1,2],[2,2,1,1],'g');
-patch([1,2,2,1],[1,1,2,2],[0,0,0,0],'y');
+elon = get_elon_ui();
+azim = get_azim_ui();
+
+ui_setup();
+
+function ui_setup()
+	uicontrol('Style', 'text', 'Position', [130 20 60 20], 'String', 'elongation');
+	uicontrol('Style', 'text', 'Position', [130 40 50 20], 'String', 'azimuth');
+	rotateview;
+	axis off
+	axis equal
+
+	generate_centerpieces();
+end
+
+function e=get_elon_ui()
+	e = uicontrol('Style', 'slider', 'Value', 0.9, 'Callback', @rotate_view, 'Position', [20 20 100 20]);
+end
+
+function a=get_azim_ui()
+	a = uicontrol('Style', 'slider', 'Value', 0.625, 'Callback', @rotate_view, 'Position', [20 40 100 20]);
+end
+
+function rotate_view(~, ~)
+   view([(elon.Value*360) (azim.Value*180-90)]);
+end
+
+function generate_centerpieces()
+	patch([1,2,2,1],[2,2,1,1],[3,3,3,3],'w');
+	patch([1,2,2,1],[0,0,0,0],[2,2,1,1],'r');
+	patch([3,3,3,3],[1,2,2,1],[2,2,1,1],'b');
+	patch([2,1,1,2],[3,3,3,3],[2,2,1,1],[1,0.6,0]);
+	patch([0,0,0,0],[2,1,1,2],[2,2,1,1],'g');
+	patch([1,2,2,1],[1,1,2,2],[0,0,0,0],'y');
+end
 % restliche Flächen
+function ui_label_and_patch_items()
 for i = 1:6
     for j = 1:8
-        cmenu(i,j) = uicontextmenu;
-        uimenu(cmenu(i,j), 'Label', 'white', 'Callback', @changeColor, 'UserData', [i j]);
-        uimenu(cmenu(i,j), 'Label', 'red', 'Callback', @changeColor, 'UserData', [i j]);
-        uimenu(cmenu(i,j), 'Label', 'blue', 'Callback', @changeColor, 'UserData', [i j]);
-        uimenu(cmenu(i,j), 'Label', 'orange', 'Callback', @changeColor, 'UserData', [i j]);
-        uimenu(cmenu(i,j), 'Label', 'green', 'Callback', @changeColor, 'UserData', [i j]);
-        uimenu(cmenu(i,j), 'Label', 'yellow', 'Callback', @changeColor, 'UserData', [i j]);
-        patch(pos(i,(12*j-11):(12*j-8)), pos(i,(12*j-7):(12*j-4)), pos(i,(12*j-3):(12*j)), w(i,j,:), 'UIContextMenu', cmenu(i,j), 'UserData', [i j]);
+        cmenu(i, j) = ui_label_item(i, j);
+        ui_label_generate_patch(cmenu, i, j);
     end
 end
+end
+
+function cmenu=ui_label_item(i, j)
+	cmenu(i,j) = uicontextmenu;
+	uimenu(cmenu(i,j), 'Label', 'white', 'Callback', @changeColor, 'UserData', [i j]);
+	uimenu(cmenu(i,j), 'Label', 'red', 'Callback', @changeColor, 'UserData', [i j]);
+	uimenu(cmenu(i,j), 'Label', 'blue', 'Callback', @changeColor, 'UserData', [i j]);
+	uimenu(cmenu(i,j), 'Label', 'orange', 'Callback', @changeColor, 'UserData', [i j]);
+	uimenu(cmenu(i,j), 'Label', 'green', 'Callback', @changeColor, 'UserData', [i j]);
+	uimenu(cmenu(i,j), 'Label', 'yellow', 'Callback', @changeColor, 'UserData', [i j]);
+end
+
+function ui_label_generate_patch(cmenu, i, j)
+	patch(pos(i,(12*j-11):(12*j-8)), pos(i,(12*j-7):(12*j-4)), pos(i,(12*j-3):(12*j)), w(i,j,:), 'UIContextMenu', cmenu(i,j), 'UserData', [i j]);
+end
+
 pause(10);
-while true
-    turn(1);
-    pause(1);
-    turn(3);
-    pause(1);
-    turn(2);
-    pause(1);
-    turn(4);
-    pause(1);
+function main_loop()
+	while true
+	    turn(1);
+	    single_frame_wait();
+	    turn(3);
+	    single_frame_wait();
+	    turn(2);
+	    single_frame_wait();
+	    turn(4);
+	    single_frame_wait();
+	end
 end
 
-
-
-
-
-
-
-    function rotateview(~, ~)
-       view([(elon.Value*360) (azim.Value*180-90)]); 
-    end
+function single_frame_wait()
+	pause(1);
+end
 
 	function changeColor(source, ~)
         i = source.UserData(1);
@@ -105,7 +132,7 @@ end
             case 'yellow'
                 w(i,j,:) = c(6,:);
         end
-        patch(pos(i,(12*j-11):(12*j-8)), pos(i,(12*j-7):(12*j-4)), pos(i,(12*j-3):(12*j)), w(i,j,:), 'UIContextMenu', cmenu(i,j), 'UserData', [i j]); 
+        patch(pos(i,(12*j-11):(12*j-8)), pos(i,(12*j-7):(12*j-4)), pos(i,(12*j-3):(12*j)), w(i,j,:), 'UIContextMenu', cmenu(i,j), 'UserData', [i j]);
         refresh;
     end
 
