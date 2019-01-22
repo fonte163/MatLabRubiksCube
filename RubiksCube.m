@@ -75,12 +75,12 @@ function generate_centerpieces()
 end
 % restliche Flächen
 function ui_label_and_patch_items()
-for i = 1:6
-    for j = 1:8
-        cmenu(i, j) = ui_label_item(i, j);
-        ui_label_generate_patch(cmenu, i, j);
+    for i = 1:6
+        for j = 1:8
+            cmenu(i, j) = ui_label_item(i, j);
+            ui_label_generate_patch(cmenu, i, j);
+        end
     end
-end
 end
 
 function cmenu=ui_label_item(i, j)
