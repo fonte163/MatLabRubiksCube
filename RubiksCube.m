@@ -117,9 +117,6 @@ end
         update_single_patch(cmenu, i, j);
         refresh;
     end
-    update_patches(cmenu);
-    hide_arrows(arrs);
-    refresh;
 
 
 
