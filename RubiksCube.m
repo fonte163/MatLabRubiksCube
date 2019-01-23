@@ -355,7 +355,7 @@ end
         end
     end
 
-    function turn_b()
+function turn_b()
         buf1 = w(1,1:2,:);
         buf2 = w(1,3,:);
         w(1,1:3,:) = w(3,3:5,:);
@@ -413,16 +413,12 @@ end
         end
     end
 
-    function update_single_patch(cmenu, i, j)
-	    patch(pos(i,(12*j-11):(12*j-8)), pos(i,(12*j-7):(12*j-4)), pos(i,(12*j-3):(12*j)), w(i,j,:), 'UIContextMenu', cmenu(i,j), 'UserData', [i j]);
-    end
 
-    function hide_arrows(arrows)
-	    for i = 0:1
-            arrows(i+1).Visible = 'Off';
-        end
-    end
 
-main()
+
+
+
+
+main();
 
 end
