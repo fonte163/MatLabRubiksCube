@@ -4,17 +4,24 @@ global fig;
 global elon;
 global azim;
 global cmenu;
+global text_error;
+global button_solve;
+global turn_list;
+global button_next;
+global button_prev;
+global solve_step;
 
-c = [[1,1,1]; [1,0,0]; [0,0,1]; [1,0.6,0]; [0,1,0]; [1,1,0]];
 
-pos = [[[0,1,1,0], [3,3,2,2], [3,3,3,3]],  [[1,2,2,1], [3,3,2,2], [3,3,3,3]], [[2,3,3,2],[3,3,2,2],[3,3,3,3]], [[2,3,3,2],[2,2,1,1],[3,3,3,3]], [[2,3,3,2],[1,1,0,0],[3,3,3,3]], [[1,2,2,1],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[2,2,1,1],[3,3,3,3]]; % weiÃŸ
+possible_colors = [[1,1,1]; [1,0,0]; [0,0,1]; [1,0.6,0]; [0,1,0]; [1,1,0]];
+
+face_positions = [[[0,1,1,0], [3,3,2,2], [3,3,3,3]],  [[1,2,2,1], [3,3,2,2], [3,3,3,3]], [[2,3,3,2],[3,3,2,2],[3,3,3,3]], [[2,3,3,2],[2,2,1,1],[3,3,3,3]], [[2,3,3,2],[1,1,0,0],[3,3,3,3]], [[1,2,2,1],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[2,2,1,1],[3,3,3,3]]; % weiß
     [[0,1,1,0], [0,0,0,0], [3,3,2,2]],  [[1,2,2,1], [0,0,0,0], [3,3,2,2]], [[2,3,3,2],[0,0,0,0],[3,3,2,2]], [[2,3,3,2],[0,0,0,0],[2,2,1,1]], [[2,3,3,2],[0,0,0,0],[1,1,0,0]], [[1,2,2,1],[0,0,0,0],[1,1,0,0]], [[0,1,1,0],[0,0,0,0],[1,1,0,0]], [[0,1,1,0],[0,0,0,0],[2,2,1,1]]; % rot
     [[3,3,3,3], [0,1,1,0], [3,3,2,2]],  [[3,3,3,3], [1,2,2,1], [3,3,2,2]], [[3,3,3,3],[2,3,3,2],[3,3,2,2]], [[3,3,3,3],[2,3,3,2],[2,2,1,1]], [[3,3,3,3],[2,3,3,2],[1,1,0,0]], [[3,3,3,3],[1,2,2,1],[1,1,0,0]], [[3,3,3,3],[0,1,1,0],[1,1,0,0]], [[3,3,3,3],[0,1,1,0],[2,2,1,1]]; % blau
     [[3,2,2,3], [3,3,3,3], [3,3,2,2]],  [[2,1,1,2], [3,3,3,3], [3,3,2,2]], [[1,0,0,1],[3,3,3,3],[3,3,2,2]], [[1,0,0,1],[3,3,3,3],[2,2,1,1]], [[1,0,0,1],[3,3,3,3],[1,1,0,0]], [[2,1,1,2],[3,3,3,3],[1,1,0,0]], [[3,2,2,3],[3,3,3,3],[1,1,0,0]], [[3,2,2,3],[3,3,3,3],[2,2,1,1]]; % orange
-    [[0,0,0,0], [3,2,2,3], [3,3,2,2]],  [[0,0,0,0], [2,1,1,2], [3,3,2,2]], [[0,0,0,0],[1,0,0,1],[3,3,2,2]], [[0,0,0,0],[1,0,0,1],[2,2,1,1]], [[0,0,0,0],[1,0,0,1],[1,1,0,0]], [[0,0,0,0],[2,1,1,2],[1,1,0,0]], [[0,0,0,0],[3,2,2,3],[1,1,0,0]], [[0,0,0,0],[3,2,2,3],[2,2,1,1]]; % grÃ¼n
-    [[0,1,1,0], [0,0,1,1], [0,0,0,0]],  [[1,2,2,1], [0,0,1,1], [0,0,0,0]], [[2,3,3,2],[0,0,1,1],[0,0,0,0]], [[2,3,3,2],[1,1,2,2],[0,0,0,0]], [[2,3,3,2],[2,2,3,3],[0,0,0,0]], [[1,2,2,1],[2,2,3,3],[0,0,0,0]], [[0,1,1,0],[2,2,3,3],[0,0,0,0]], [[1,0,0,1],[1,1,2,2],[0,0,0,0]]];% weiÃŸ
+    [[0,0,0,0], [3,2,2,3], [3,3,2,2]],  [[0,0,0,0], [2,1,1,2], [3,3,2,2]], [[0,0,0,0],[1,0,0,1],[3,3,2,2]], [[0,0,0,0],[1,0,0,1],[2,2,1,1]], [[0,0,0,0],[1,0,0,1],[1,1,0,0]], [[0,0,0,0],[2,1,1,2],[1,1,0,0]], [[0,0,0,0],[3,2,2,3],[1,1,0,0]], [[0,0,0,0],[3,2,2,3],[2,2,1,1]]; % grün
+    [[0,1,1,0], [0,0,1,1], [0,0,0,0]],  [[1,2,2,1], [0,0,1,1], [0,0,0,0]], [[2,3,3,2],[0,0,1,1],[0,0,0,0]], [[2,3,3,2],[1,1,2,2],[0,0,0,0]], [[2,3,3,2],[2,2,3,3],[0,0,0,0]], [[1,2,2,1],[2,2,3,3],[0,0,0,0]], [[0,1,1,0],[2,2,3,3],[0,0,0,0]], [[1,0,0,1],[1,1,2,2],[0,0,0,0]]];% weiß
 
-arrows = [2.5,  2.1,  2.9,   1.9,  1.1,  1.1,   3.1, 3.1, 3.1,   2.5,  2.1,  2.9,  -0.1, -0.1, -0.1,   1.9, 1.1, 1.1; % R
+arrow_positions = [2.5,  2.1,  2.9,   1.9,  1.1,  1.1,   3.1, 3.1, 3.1,   2.5,  2.1,  2.9,  -0.1, -0.1, -0.1,   1.9, 1.1, 1.1; % R
     2.5,  2.9,  2.1,  -0.1, -0.1, -0.1,   1.1, 1.9, 1.9,   2.5,  2.9,  2.1,   1.1,  1.9,  1.9,   3.1, 3.1, 3.1; % R'
     1.1,  1.9,  1.9,  -0.1, -0.1, -0.1,   2.5, 2.1, 2.9,  -0.1, -0.1, -0.1,   1.9,  1.1,  1.1,   2.5, 2.1, 2.9; % U
     -0.1, -0.1, -0.1,   1.1,  1.9,  1.9,   2.5, 2.9, 2.1,   1.9,  1.1,  1.1,  -0.1, -0.1, -0.1,   2.5, 2.9, 2.1; % U'
@@ -28,10 +35,10 @@ arrows = [2.5,  2.1,  2.9,   1.9,  1.1,  1.1,   3.1, 3.1, 3.1,   2.5,  2.1,  2.9
     -0.1, -0.1, -0.1,   2.5,  2.9,  2.1,   1.9, 1.1, 1.1,   1.9,  1.1,  1.1,   2.5,  2.9,  2.1,   3.1, 3.1, 3.1; % B'
     ];
 
-w=[];
+face_color_rgb=[];
 for i = 1:6
     for j = 1:8
-        w(i,j,:) = c(i,:);
+        face_color_rgb(i,j,:) = possible_colors(i,:);
     end
 end
 
@@ -41,15 +48,18 @@ end
         azim = get_azim_ui();
 
         ui_setup();
-        cmenu = generate_and_patch_ui_menu();
+        generate_and_patch_ui_menu();
 
-        pause(10);
         main_loop();
     end
 
     function ui_setup()
         uicontrol('Style', 'text', 'Position', [130 20 60 20], 'String', 'elongation');
         uicontrol('Style', 'text', 'Position', [130 40 50 20], 'String', 'azimuth');
+		text_error = uicontrol('Style', 'text', 'Position', [350 10 200 20], 'String', 'there have to be 9 faces of each color', 'ForegroundColor', 'r', 'Visible', 'Off');
+		button_solve = uicontrol('Style', 'pushbutton', 'Position', [495 30 50 30], 'String', 'solve', 'Callback', @solve_cube);
+        button_next = uicontrol('Style', 'pushbutton', 'Position', [495 380 50 30], 'String', 'next', 'Callback', @next_step, 'Enable', 'off');
+        button_prev = uicontrol('Style', 'pushbutton', 'Position', [435 380 50 30], 'String', 'prev', 'Callback', @prev_step, 'Enable', 'off');
         rotate_view();
         axis off
         axis equal
@@ -78,7 +88,7 @@ end
         patch([1,2,2,1],[1,1,2,2],[0,0,0,0],'y');
     end
 
-    function cmenu=generate_and_patch_ui_menu()
+    function generate_and_patch_ui_menu()
         for i = 1:6
             for j = 1:8
                 cmenu(i, j) = generate_single_ui_menu(i, j);
@@ -87,14 +97,14 @@ end
         update_patches(cmenu);
     end
 
-    function cmenu=generate_single_ui_menu(i, j)
-        cmenu = uicontextmenu;
-        uimenu(cmenu, 'Label', 'white', 'Callback', @change_color, 'UserData', [i j]);
-        uimenu(cmenu, 'Label', 'red', 'Callback', @change_color, 'UserData', [i j]);
-        uimenu(cmenu, 'Label', 'blue', 'Callback', @change_color, 'UserData', [i j]);
-        uimenu(cmenu, 'Label', 'orange', 'Callback', @change_color, 'UserData', [i j]);
-        uimenu(cmenu, 'Label', 'green', 'Callback', @change_color, 'UserData', [i j]);
-        uimenu(cmenu, 'Label', 'yellow', 'Callback', @change_color, 'UserData', [i j]);
+    function one_cmenu = generate_single_ui_menu(i, j)
+        one_cmenu = uicontextmenu();
+        uimenu(one_cmenu, 'Label', 'white', 'Callback', @change_color, 'UserData', [i j]);
+        uimenu(one_cmenu, 'Label', 'red', 'Callback', @change_color, 'UserData', [i j]);
+        uimenu(one_cmenu, 'Label', 'blue', 'Callback', @change_color, 'UserData', [i j]);
+        uimenu(one_cmenu, 'Label', 'orange', 'Callback', @change_color, 'UserData', [i j]);
+        uimenu(one_cmenu, 'Label', 'green', 'Callback', @change_color, 'UserData', [i j]);
+        uimenu(one_cmenu, 'Label', 'yellow', 'Callback', @change_color, 'UserData', [i j]);
     end
 
     function change_color(source, ~)
@@ -102,17 +112,17 @@ end
         j = source.UserData(2);
         switch source.Label
             case 'white'
-                w(i,j,:) = c(1,:);
+                face_color_rgb(i,j,:) = possible_colors(1,:);
             case 'red'
-                w(i,j,:) = c(2,:);
+                face_color_rgb(i,j,:) = possible_colors(2,:);
             case 'blue'
-                w(i,j,:) = c(3,:);
+                face_color_rgb(i,j,:) = possible_colors(3,:);
             case 'orange'
-                w(i,j,:) = c(4,:);
+                face_color_rgb(i,j,:) = possible_colors(4,:);
             case 'green'
-                w(i,j,:) = c(5,:);
+                face_color_rgb(i,j,:) = possible_colors(5,:);
             case 'yellow'
-                w(i,j,:) = c(6,:);
+                face_color_rgb(i,j,:) = possible_colors(6,:);
         end
         update_single_patch(cmenu, i, j);
         refresh;
@@ -127,18 +137,7 @@ end
 
 
     function main_loop()
-        turn(1)
-        turn(1)
-        turn(5)
-        turn(5)
-        turn(3)
-        turn(3)
-        turn(7)
-        turn(7)
-        turn(9)
-        turn(9)
-        turn(11)
-        turn(11)
+        
     end
 
 
@@ -149,7 +148,7 @@ end
     function turn(dir)
         % R, R', U, U', L, L', D, D', F, F', B, B'
         for i = 0:1
-            arrs(i+1) = patch(arrows(dir, (1+9*i):(3+9*i)), arrows(dir, (4+9*i):(6+9*i)), arrows(dir, (7+9*i):(9+9*i)), [0.5 0.1 0.5]);
+            turn_arrows(i+1) = patch(arrow_positions(dir, (1+9*i):(3+9*i)), arrow_positions(dir, (4+9*i):(6+9*i)), arrow_positions(dir, (7+9*i):(9+9*i)), [0.5 0.1 0.5]);
         end
         pause(1);
         switch dir
@@ -179,214 +178,214 @@ end
                 reverse_turn_b();
         end
         update_patches(cmenu);
-        hide_arrows(arrs);
+        hide_arrows(turn_arrows);
         refresh;
     end
 
     function turn_r()
-        buf1 = w(1, 3, :);
-        buf2 = w(1, 4, :);
-        buf3 = w(1, 5, :);
-        w(1, 3:5, :) = w(2, 3:5, :);
-        w(2, 3:5, :) = w(6, 3:5, :);
-        w(6, 3:4, :) = w(4, 7:8, :);
-        w(6, 5, :) = w(4, 1, :);
-        w(4, 7, :) = buf1;
-        w(4, 8, :) = buf2;
-        w(4, 1, :) = buf3;
+        buf1 = face_color_rgb(1, 3, :);
+        buf2 = face_color_rgb(1, 4, :);
+        buf3 = face_color_rgb(1, 5, :);
+        face_color_rgb(1, 3:5, :) = face_color_rgb(2, 3:5, :);
+        face_color_rgb(2, 3:5, :) = face_color_rgb(6, 3:5, :);
+        face_color_rgb(6, 3:4, :) = face_color_rgb(4, 7:8, :);
+        face_color_rgb(6, 5, :) = face_color_rgb(4, 1, :);
+        face_color_rgb(4, 7, :) = buf1;
+        face_color_rgb(4, 8, :) = buf2;
+        face_color_rgb(4, 1, :) = buf3;
         for j = 1:2
-            buf = w(3,8,:);
+            buf = face_color_rgb(3,8,:);
             for i = 8:-1:2
-                w(3,i,:) = w(3,i-1,:);
+                face_color_rgb(3,i,:) = face_color_rgb(3,i-1,:);
             end
-            w(3,1,:) = buf;
+            face_color_rgb(3,1,:) = buf;
         end
     end
 
     function reverse_turn_r()
-        buf = w(1, 3:5, :);
-        w(1, 3:4, :) = w(4, 7:8, :);
-        w(1, 5, :) = w(4, 1, :);
-        w(4, 7:8, :) = w(6, 3:4, :);
-        w(4, 1, :) = w(6, 5, :);
-        w(6, 3:5, :) = w(2, 3:5, :);
-        w(2, 3:5, :) = buf;
+        buf = face_color_rgb(1, 3:5, :);
+        face_color_rgb(1, 3:4, :) = face_color_rgb(4, 7:8, :);
+        face_color_rgb(1, 5, :) = face_color_rgb(4, 1, :);
+        face_color_rgb(4, 7:8, :) = face_color_rgb(6, 3:4, :);
+        face_color_rgb(4, 1, :) = face_color_rgb(6, 5, :);
+        face_color_rgb(6, 3:5, :) = face_color_rgb(2, 3:5, :);
+        face_color_rgb(2, 3:5, :) = buf;
         for j = 1:2
-            buf = w(3,1,:);
+            buf = face_color_rgb(3,1,:);
             for i = 1:7
-                w(3,i,:) = w(3,i+1,:);
+                face_color_rgb(3,i,:) = face_color_rgb(3,i+1,:);
             end
-            w(3,8,:) = buf;
+            face_color_rgb(3,8,:) = buf;
         end
     end
 
     function turn_u()
-        buf = w(2, 1:3, :);
+        buf = face_color_rgb(2, 1:3, :);
         for i = 2:4
-            w(i, 1:3, :) = w(i+1, 1:3, :);
+            face_color_rgb(i, 1:3, :) = face_color_rgb(i+1, 1:3, :);
         end
-        w(5, 1:3, :) = buf;
+        face_color_rgb(5, 1:3, :) = buf;
         for i = 1:2
-            buf = w(1,8,:);
+            buf = face_color_rgb(1,8,:);
             for i = 8:-1:2
-                w(1,i,:) = w(1,i-1,:);
+                face_color_rgb(1,i,:) = face_color_rgb(1,i-1,:);
             end
-            w(1,1,:) = buf;
+            face_color_rgb(1,1,:) = buf;
         end
     end
 
     function reverse_turn_u()
-        buf = w(5, 1:3, :);
+        buf = face_color_rgb(5, 1:3, :);
         for i = 5:-1:3
-            w(i, 1:3, :) = w(i-1, 1:3, :);
+            face_color_rgb(i, 1:3, :) = face_color_rgb(i-1, 1:3, :);
         end
-        w(2, 1:3, :) = buf;
+        face_color_rgb(2, 1:3, :) = buf;
         for j = 1:2
-            buf = w(1,1,:);
+            buf = face_color_rgb(1,1,:);
             for i = 1:7
-                w(1,i,:) = w(1,i+1,:);
+                face_color_rgb(1,i,:) = face_color_rgb(1,i+1,:);
             end
-            w(1,8,:) = buf;
+            face_color_rgb(1,8,:) = buf;
         end
     end
 
     function turn_l()
-        buf1 = w(1, 1, :);
-        buf2 = w(1, 7:8, :);
-        w(1, 1, :) = w(4, 5, :);
-        w(1, 7:8, :) = w(4, 3:4, :);
-        w(4, 5, :) = w(6, 1, :);
-        w(4, 3:4, :) = w(6, 7:8, :);
-        w(6, 1, :) = w(2, 1, :);
-        w(6, 7:8, :) = w(2, 7:8, :);
-        w(2, 1, :) = buf1;
-        w(2, 7:8, :) = buf2;
+        buf1 = face_color_rgb(1, 1, :);
+        buf2 = face_color_rgb(1, 7:8, :);
+        face_color_rgb(1, 1, :) = face_color_rgb(4, 5, :);
+        face_color_rgb(1, 7:8, :) = face_color_rgb(4, 3:4, :);
+        face_color_rgb(4, 5, :) = face_color_rgb(6, 1, :);
+        face_color_rgb(4, 3:4, :) = face_color_rgb(6, 7:8, :);
+        face_color_rgb(6, 1, :) = face_color_rgb(2, 1, :);
+        face_color_rgb(6, 7:8, :) = face_color_rgb(2, 7:8, :);
+        face_color_rgb(2, 1, :) = buf1;
+        face_color_rgb(2, 7:8, :) = buf2;
         for i = 1:2
-            buf = w(5,8,:);
+            buf = face_color_rgb(5,8,:);
             for i = 8:-1:2
-                w(5,i,:) = w(5,i-1,:);
+                face_color_rgb(5,i,:) = face_color_rgb(5,i-1,:);
             end
-            w(5,1,:) = buf;
+            face_color_rgb(5,1,:) = buf;
         end
     end
 
     function reverse_turn_l()
-        buf1 = w(1, 1, :);
-        buf2 = w(1, 7:8, :);
-        w(1, 1, :) = w(2, 1, :);
-        w(1, 7:8, :) = w(2, 7:8, :);
-        w(2, 1, :) = w(6, 1, :);
-        w(2, 7:8, :) = w(6, 7:8, :);
-        w(6, 1, :) = w(4, 5, :);
-        w(6, 7:8, :) = w(4, 3:4, :);
-        w(4, 5, :) = buf1;
-        w(4, 3:4, :) = buf2;
+        buf1 = face_color_rgb(1, 1, :);
+        buf2 = face_color_rgb(1, 7:8, :);
+        face_color_rgb(1, 1, :) = face_color_rgb(2, 1, :);
+        face_color_rgb(1, 7:8, :) = face_color_rgb(2, 7:8, :);
+        face_color_rgb(2, 1, :) = face_color_rgb(6, 1, :);
+        face_color_rgb(2, 7:8, :) = face_color_rgb(6, 7:8, :);
+        face_color_rgb(6, 1, :) = face_color_rgb(4, 5, :);
+        face_color_rgb(6, 7:8, :) = face_color_rgb(4, 3:4, :);
+        face_color_rgb(4, 5, :) = buf1;
+        face_color_rgb(4, 3:4, :) = buf2;
         for j = 1:2
-            buf = w(5,1,:);
+            buf = face_color_rgb(5,1,:);
             for i = 1:7
-                w(5,i,:) = w(5,i+1,:);
+                face_color_rgb(5,i,:) = face_color_rgb(5,i+1,:);
             end
-            w(5,8,:) = buf;
+            face_color_rgb(5,8,:) = buf;
         end
     end
 
     function turn_d()
-        buf = w(2, 5:7, :);
-        w(2, 5:7, :) = w(5, 5:7, :);
-        w(5, 5:7, :) = w(4, 5:7, :);
-        w(4, 5:7, :) = w(3, 5:7, :);
-        w(3, 5:7, :) = buf;
+        buf = face_color_rgb(2, 5:7, :);
+        face_color_rgb(2, 5:7, :) = face_color_rgb(5, 5:7, :);
+        face_color_rgb(5, 5:7, :) = face_color_rgb(4, 5:7, :);
+        face_color_rgb(4, 5:7, :) = face_color_rgb(3, 5:7, :);
+        face_color_rgb(3, 5:7, :) = buf;
         for i = 1:2
-            buf = w(6,8,:);
+            buf = face_color_rgb(6,8,:);
             for i = 8:-1:2
-                w(6,i,:) = w(6,i-1,:);
+                face_color_rgb(6,i,:) = face_color_rgb(6,i-1,:);
             end
-            w(6,1,:) = buf;
+            face_color_rgb(6,1,:) = buf;
         end
     end
 
     function reverse_turn_d()
-        buf = w(2, 5:7, :);
-        w(2, 5:7, :) = w(3, 5:7, :);
-        w(3, 5:7, :) = w(4, 5:7, :);
-        w(4, 5:7, :) = w(5, 5:7, :);
-        w(5, 5:7, :) = buf;
+        buf = face_color_rgb(2, 5:7, :);
+        face_color_rgb(2, 5:7, :) = face_color_rgb(3, 5:7, :);
+        face_color_rgb(3, 5:7, :) = face_color_rgb(4, 5:7, :);
+        face_color_rgb(4, 5:7, :) = face_color_rgb(5, 5:7, :);
+        face_color_rgb(5, 5:7, :) = buf;
         for j = 1:2
-            buf = w(6,1,:);
+            buf = face_color_rgb(6,1,:);
             for i = 1:7
-                w(6,i,:) = w(6,i+1,:);
+                face_color_rgb(6,i,:) = face_color_rgb(6,i+1,:);
             end
-            w(6,8,:) = buf;
+            face_color_rgb(6,8,:) = buf;
         end
     end
 
     function turn_f()
-        buf1 = w(1, 7, :);
-        buf2 = w(1, 5:6, :);
-        w(1, 5:7, :) = w(5, 3:5, :);
-        w(5, 3:5, :) = w(6, 1:3, :);
-        w(6, 1:2, :) = w(3, 7:8, :);
-        w(6, 3, :) = w(3, 1, :);
-        w(3, 1, :) = buf1;
-        w(3, 7:8, :) = buf2;
+        buf1 = face_color_rgb(1, 7, :);
+        buf2 = face_color_rgb(1, 5:6, :);
+        face_color_rgb(1, 5:7, :) = face_color_rgb(5, 3:5, :);
+        face_color_rgb(5, 3:5, :) = face_color_rgb(6, 1:3, :);
+        face_color_rgb(6, 1:2, :) = face_color_rgb(3, 7:8, :);
+        face_color_rgb(6, 3, :) = face_color_rgb(3, 1, :);
+        face_color_rgb(3, 1, :) = buf1;
+        face_color_rgb(3, 7:8, :) = buf2;
         for i = 1:2
-            buf = w(2,8,:);
+            buf = face_color_rgb(2,8,:);
             for i = 8:-1:2
-                w(2,i,:) = w(2,i-1,:);
+                face_color_rgb(2,i,:) = face_color_rgb(2,i-1,:);
             end
-            w(2,1,:) = buf;
+            face_color_rgb(2,1,:) = buf;
         end
     end
 
     function reverse_turn_f()
-        buf = w(1, 5:7, :);
-        w(1, 7, :) = w(3, 1, :);
-        w(1, 5:6, :) = w(3, 7:8, :);
-        w(3, 1, :) = w(6,3,:);
-        w(3,7:8,:) = w(6,1:2,:);
-        w(6,1:3,:) = w(5,3:5,:);
-        w(5,3:5,:) = buf;
+        buf = face_color_rgb(1, 5:7, :);
+        face_color_rgb(1, 7, :) = face_color_rgb(3, 1, :);
+        face_color_rgb(1, 5:6, :) = face_color_rgb(3, 7:8, :);
+        face_color_rgb(3, 1, :) = face_color_rgb(6,3,:);
+        face_color_rgb(3,7:8,:) = face_color_rgb(6,1:2,:);
+        face_color_rgb(6,1:3,:) = face_color_rgb(5,3:5,:);
+        face_color_rgb(5,3:5,:) = buf;
         for j = 1:2
-            buf = w(2,1,:);
+            buf = face_color_rgb(2,1,:);
             for i = 1:7
-                w(2,i,:) = w(2,i+1,:);
+                face_color_rgb(2,i,:) = face_color_rgb(2,i+1,:);
             end
-            w(2,8,:) = buf;
+            face_color_rgb(2,8,:) = buf;
         end
     end
 
 function turn_b()
-        buf1 = w(1,1:2,:);
-        buf2 = w(1,3,:);
-        w(1,1:3,:) = w(3,3:5,:);
-        w(3,3:5,:) = w(6,5:7,:);
-        w(6,5:6,:) = w(5,7:8,:);
-        w(6,7,:) = w(5,1,:);
-        w(5,7:8,:) = buf1;
-        w(5,1,:) = buf2;
+        buf1 = face_color_rgb(1,1:2,:);
+        buf2 = face_color_rgb(1,3,:);
+        face_color_rgb(1,1:3,:) = face_color_rgb(3,3:5,:);
+        face_color_rgb(3,3:5,:) = face_color_rgb(6,5:7,:);
+        face_color_rgb(6,5:6,:) = face_color_rgb(5,7:8,:);
+        face_color_rgb(6,7,:) = face_color_rgb(5,1,:);
+        face_color_rgb(5,7:8,:) = buf1;
+        face_color_rgb(5,1,:) = buf2;
         for i = 1:2
-            buf = w(4,8,:);
+            buf = face_color_rgb(4,8,:);
             for i = 8:-1:2
-                w(4,i,:) = w(4,i-1,:);
+                face_color_rgb(4,i,:) = face_color_rgb(4,i-1,:);
             end
-            w(4,1,:) = buf;
+            face_color_rgb(4,1,:) = buf;
         end
     end
 
     function reverse_turn_b()
-        buf = w(1,1:3,:);
-        w(1,3,:) = w(5,1,:);
-        w(1,1:2,:) = w(5,7:8,:);
-        w(5,1,:) = w(6,7,:);
-        w(5,7:8,:) = w(6,5:6,:);
-        w(6,5:7,:) = w(3,3:5,:);
-        w(3,3:5,:) = buf;
+        buf = face_color_rgb(1,1:3,:);
+        face_color_rgb(1,3,:) = face_color_rgb(5,1,:);
+        face_color_rgb(1,1:2,:) = face_color_rgb(5,7:8,:);
+        face_color_rgb(5,1,:) = face_color_rgb(6,7,:);
+        face_color_rgb(5,7:8,:) = face_color_rgb(6,5:6,:);
+        face_color_rgb(6,5:7,:) = face_color_rgb(3,3:5,:);
+        face_color_rgb(3,3:5,:) = buf;
         for j = 1:2
-            buf = w(4,1,:);
+            buf = face_color_rgb(4,1,:);
             for i = 1:7
-                w(4,i,:) = w(4,i+1,:);
+                face_color_rgb(4,i,:) = face_color_rgb(4,i+1,:);
             end
-            w(4,8,:) = buf;
+            face_color_rgb(4,8,:) = buf;
         end
     end
 
@@ -404,7 +403,7 @@ function turn_b()
     end
 
     function update_single_patch(cmenu, i, j)
-        patch(pos(i,(12*j-11):(12*j-8)), pos(i,(12*j-7):(12*j-4)), pos(i,(12*j-3):(12*j)), w(i,j,:), 'UIContextMenu', cmenu(i,j), 'UserData', [i j]);
+        patch(face_positions(i,(12*j-11):(12*j-8)), face_positions(i,(12*j-7):(12*j-4)), face_positions(i,(12*j-3):(12*j)), face_color_rgb(i,j,:), 'UIContextMenu', cmenu(i,j), 'UserData', [i j]);
     end
 
     function hide_arrows(arrows)
@@ -413,11 +412,74 @@ function turn_b()
         end
     end
 
+	function solve_cube(~, ~)
+		face_color_code = zeros(6,8);
+        button_solve.Enable = 'off';
+		for i = 1:6
+			for j = 1:8
+				cc(1:3) = face_color_rgb(i, j, :);
+				if isequal(cc, [1 1 1])
+					face_color_code(i, j) = 1;
+				elseif isequal(cc, [1 0 0])
+					face_color_code(i, j) = 2;
+				elseif isequal(cc, [0 0 1])
+					face_color_code(i, j) = 3;
+				elseif isequal(cc, [1 0.6 0])
+					face_color_code(i, j) = 4;
+				elseif isequal(cc, [0 1 0])
+					face_color_code(i, j) = 5;
+				else
+					face_color_code(i, j) = 6;
+				end
+			end
+		end
+		vals = tabulate(face_color_code(:));
+		vals2(1:6) = vals(:, 2);
+		if ~isequal(vals2, [8 8 8 8 8 8])
+			text_error.Visible = 'On';
+        else
+            text_error.Visible = 'Off';
+            turn_list = generate_solution(face_color_code);
+            button_next.Enable = 'on';
+            button_prev.Enable = 'off';
+            solve_step = 1;
+            turn_list = [];
+        end
+        button_solve.Enable = 'on';
+    end
 
+    function next_step(~, ~)
+        button_next.Enable = 'off';
+        button_prev.Enable = 'off';
+        turn(turn_list(solve_step));
+        button_next.Enable = 'on';
+        button_prev.Enable = 'on';
+        solve_step = solve_step + 1;
+        if (solve_step > length(turn_list))
+            button_next.Enable = 'off';
+        end
+    end
 
+    function prev_step(~, ~)
+        button_next.Enable = 'off';
+        button_prev.Enable = 'off';
+        turn(get_reverse_turn(turn_list(solve_step - 1)));
+        button_next.Enable = 'on';
+        button_prev.Enable = 'on';
+        solve_step = solve_step - 1;
+        if (solve_step == 1)
+            button_prev.Enable = 'off';
+        end
+    end
 
-
-
+    function reverse_turn = get_reverse_turn(current_turn)
+        if mod(current_turn, 2) == 0
+            reverse_turn = current_turn - 1;
+        else
+            reverse_turn = current_turn + 1;
+        end
+    end
+        
 
 main();
 
