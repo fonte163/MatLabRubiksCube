@@ -5,6 +5,7 @@ global elon;
 global azim;
 global cmenu;
 global text_error;
+global text_solved;
 global button_solve;
 global turn_list;
 global button_next;
@@ -57,6 +58,7 @@ end
         uicontrol('Style', 'text', 'Position', [130 20 60 20], 'String', 'elongation');
         uicontrol('Style', 'text', 'Position', [130 40 50 20], 'String', 'azimuth');
 		text_error = uicontrol('Style', 'text', 'Position', [350 10 200 20], 'String', 'there have to be 9 faces of each color', 'ForegroundColor', 'r', 'Visible', 'Off');
+		text_solved = uicontrol('Style', 'text', 'Position', [435 350 110 20], 'String', 'Solved!', 'ForegroundColor', 'g', 'Visible', 'Off');
 		button_solve = uicontrol('Style', 'pushbutton', 'Position', [495 30 50 30], 'String', 'solve', 'Callback', @solve_cube);
         button_next = uicontrol('Style', 'pushbutton', 'Position', [495 380 50 30], 'String', 'next', 'Callback', @next_step, 'Enable', 'off');
         button_prev = uicontrol('Style', 'pushbutton', 'Position', [435 380 50 30], 'String', 'prev', 'Callback', @prev_step, 'Enable', 'off');
@@ -150,7 +152,7 @@ end
         for i = 0:1
             turn_arrows(i+1) = patch(arrow_positions(dir, (1+9*i):(3+9*i)), arrow_positions(dir, (4+9*i):(6+9*i)), arrow_positions(dir, (7+9*i):(9+9*i)), [0.5 0.1 0.5]);
         end
-        pause(1);
+%        pause(1);
         switch dir
             case 1
                 turn_r();
@@ -439,11 +441,16 @@ function turn_b()
 			text_error.Visible = 'On';
         else
             text_error.Visible = 'Off';
-            turn_list = generate_solution(face_color_code);
-            button_next.Enable = 'on';
-            button_prev.Enable = 'off';
-            solve_step = 1;
             turn_list = [];
+            turn_list = generate_solution(face_color_code);
+			if (~isempty(turn_list))
+				button_next.Enable = 'on';
+				button_prev.Enable = 'off';
+				solve_step = 1;
+			else
+				disp('Already solved');
+			end
+			text_solved.Visible = 'on';
         end
         button_solve.Enable = 'on';
     end
