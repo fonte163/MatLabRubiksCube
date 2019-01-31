@@ -11,6 +11,10 @@ global turn_list;
 global button_next;
 global button_prev;
 global solve_step;
+global checkbox_arrows;
+global rotation_buttons;
+global text_not_solvable;
+global button_group;
 
 
 possible_colors = [[1,1,1]; [1,0,0]; [0,0,1]; [1,0.6,0]; [0,1,0]; [1,1,0]];
@@ -35,6 +39,7 @@ arrow_positions = [2.5,  2.1,  2.9,   1.9,  1.1,  1.1,   3.1, 3.1, 3.1,   2.5,  
     1.1,  1.9,  1.9,   2.5,  2.1,  2.9,   3.1, 3.1, 3.1,  -0.1, -0.1, -0.1,   2.5,  2.1,  2.9,   1.1, 1.9, 1.9; % B
     -0.1, -0.1, -0.1,   2.5,  2.9,  2.1,   1.9, 1.1, 1.1,   1.9,  1.1,  1.1,   2.5,  2.9,  2.1,   3.1, 3.1, 3.1; % B'
     ];
+rotation_button_labels = {'R', 'R''', 'U', 'U''', 'L', 'L''', 'D', 'D''', 'F', 'F''', 'B', 'B'''};
 
 face_color_rgb=[];
 for i = 1:6
@@ -44,29 +49,62 @@ for i = 1:6
 end
 
     function main()
-        fig = figure('Name','Rubiks Cube','NumberTitle','off','MenuBar','none');
+        fig = figure('Name','Rubiks Cube','NumberTitle','off','MenuBar','none','resize','off');
         elon = get_elon_ui();
         azim = get_azim_ui();
 
         ui_setup();
         generate_and_patch_ui_menu();
-
-        main_loop();
     end
 
     function ui_setup()
         uicontrol('Style', 'text', 'Position', [130 20 60 20], 'String', 'elongation');
         uicontrol('Style', 'text', 'Position', [130 40 50 20], 'String', 'azimuth');
-		text_error = uicontrol('Style', 'text', 'Position', [350 10 200 20], 'String', 'there have to be 9 faces of each color', 'ForegroundColor', 'r', 'Visible', 'Off');
+		text_error = uicontrol('Style', 'text', 'Position', [495 220 50 85], 'String', 'there have to be 9 faces of each color', 'ForegroundColor', 'r', 'Visible', 'Off');
+        text_not_solvable = uicontrol('Style', 'text', 'Position', [495 220 50 85], 'String', 'currently not solvable', 'ForegroundColor', 'r', 'Visible', 'Off');
 		text_solved = uicontrol('Style', 'text', 'Position', [435 350 110 20], 'String', 'Solved!', 'ForegroundColor', 'g', 'Visible', 'Off');
-		button_solve = uicontrol('Style', 'pushbutton', 'Position', [495 30 50 30], 'String', 'solve', 'Callback', @solve_cube);
+		button_solve = uicontrol('Style', 'pushbutton', 'Position', [495 310 50 30], 'String', 'solve', 'Callback', @solve_cube);
         button_next = uicontrol('Style', 'pushbutton', 'Position', [495 380 50 30], 'String', 'next', 'Callback', @next_step, 'Enable', 'off');
         button_prev = uicontrol('Style', 'pushbutton', 'Position', [435 380 50 30], 'String', 'prev', 'Callback', @prev_step, 'Enable', 'off');
+        checkbox_arrows = uicontrol('Style', 'checkbox', 'Value', 1, 'Position', [215 390 150 20], 'String', 'show arrows on rotation');
+        button_group = uibuttongroup('Visible', 'off', 'SelectionChangedFcn', @change_input_method, 'UserData', 0, 'Position', [0.03 0.875 0.25 0.098], 'BorderType', 'none');
+        uicontrol(button_group, 'Style', 'radiobutton', 'String', 'solve automatically', 'Position', [5 20 120 20]);
+        uicontrol(button_group, 'Style', 'radiobutton', 'String', 'play around', 'Position', [5 0 100 20]);
+        button_group.Visible = 'on';
+        for i = 1:12
+            rotation_buttons(i) = uicontrol('Style', 'pushbutton', 'UserData', i, 'Position', [10 350-20*i 40 20], 'String', rotation_button_labels{i}, 'Callback', @manual_turn, 'Enable', 'off');
+        end
         rotate_view();
         axis off
         axis equal
 
         generate_centerpieces();
+    end
+
+    function change_input_method(source,~)
+        switch source.UserData
+            case 0
+                for i = 1:12
+                    set(rotation_buttons(i), 'Enable', 'on');
+                end
+                button_solve.Enable = 'off';
+                button_next.Enable = 'off';
+                button_prev.Enable = 'off';
+                text_solved.Visible = 'off';
+                text_error.Visible = 'off';
+                text_not_solvable.Visible = 'off';
+                source.UserData = 1;
+            case 1
+                for i = 1:12
+                    set(rotation_buttons(i), 'Enable', 'off');
+                end
+                source.UserData = 0;
+                button_solve.Enable = 'on';
+        end
+    end
+
+    function manual_turn(source,~)
+        turn(source.UserData);
     end
 
     function e=get_elon_ui()
@@ -135,24 +173,17 @@ end
 
 
 
-
-
-
-    function main_loop()
-        
-    end
-
-
-
-
-
-
     function turn(dir)
         % R, R', U, U', L, L', D, D', F, F', B, B'
+        for i = 1:12
+            set(rotation_buttons(i), 'Enable', 'off');
+        end
         for i = 0:1
             turn_arrows(i+1) = patch(arrow_positions(dir, (1+9*i):(3+9*i)), arrow_positions(dir, (4+9*i):(6+9*i)), arrow_positions(dir, (7+9*i):(9+9*i)), [0.5 0.1 0.5]);
         end
-%        pause(1);
+        if (checkbox_arrows.Value)
+            pause(1);
+        end
         switch dir
             case 1
                 turn_r();
@@ -181,6 +212,11 @@ end
         end
         update_patches(cmenu);
         hide_arrows(turn_arrows);
+        if (button_group.UserData == 1)
+            for i = 1:12
+                set(rotation_buttons(i), 'Enable', 'on');
+            end
+        end
         refresh;
     end
 
@@ -356,7 +392,7 @@ end
         end
     end
 
-function turn_b()
+	function turn_b()
         buf1 = face_color_rgb(1,1:2,:);
         buf2 = face_color_rgb(1,3,:);
         face_color_rgb(1,1:3,:) = face_color_rgb(3,3:5,:);
@@ -393,9 +429,6 @@ function turn_b()
 
 
 
-
-
-
     function update_patches(cmenu)
         for i = 1:6
             for j = 1:8
@@ -416,6 +449,9 @@ function turn_b()
 
 	function solve_cube(~, ~)
 		face_color_code = zeros(6,8);
+		elon.Value = 0.9;
+		azim.Value = 0.625;
+		rotate_view();
         button_solve.Enable = 'off';
 		for i = 1:6
 			for j = 1:8
@@ -437,20 +473,26 @@ function turn_b()
 		end
 		vals = tabulate(face_color_code(:));
 		vals2(1:6) = vals(:, 2);
-		if ~isequal(vals2, [8 8 8 8 8 8])
+        if ~isequal(vals2, [8 8 8 8 8 8])
 			text_error.Visible = 'On';
         else
             text_error.Visible = 'Off';
+            text_not_solvable.Visible = 'off';
             turn_list = [];
             turn_list = generate_solution(face_color_code);
 			if (~isempty(turn_list))
-				button_next.Enable = 'on';
-				button_prev.Enable = 'off';
-				solve_step = 1;
+                button_prev.Enable = 'off';
+                if (turn_list == -1)
+                    text_not_solvable.Visible = 'on';
+                else
+                    button_next.Enable = 'on';
+                    text_solved.Visible = 'on';
+                    text_solved.String = strcat('Solved in', {' '}, int2str(length(turn_list)), ' steps!');
+                    solve_step = 1;
+                end
 			else
 				disp('Already solved');
-			end
-			text_solved.Visible = 'on';
+            end
         end
         button_solve.Enable = 'on';
     end
@@ -464,7 +506,7 @@ function turn_b()
         solve_step = solve_step + 1;
         if (solve_step > length(turn_list))
             button_next.Enable = 'off';
-        end
+		end
     end
 
     function prev_step(~, ~)
