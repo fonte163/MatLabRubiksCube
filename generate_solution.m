@@ -6,42 +6,46 @@ function turns = generate_solution(face_color_code)
 
     %yellow_edge_everything();
 
+    %if (turns == -1) return; end
+
     %refresh_face_colors();
-	
+
 	%yellow_corner_everything();
-	
+
+    %if (turns == -1) return; end
+
 	%refresh_face_colors();
 
 	mid_edges();
-    
+
     if (turns == -1) return; end
 
     refresh_face_colors();
 
     white_edge_orientation();
-    
+
     if (turns == -1) return; end
 
     refresh_face_colors();
 
     white_corner_orientation();
-    
+
     if (turns == -1) return; end
 
     refresh_face_colors();
 
     white_corner_permutation();
-    
+
     if (turns == -1) return; end
-    
+
     refresh_face_colors();
-    
+
     white_edge_permutation();
-    
+
     if (turns == -1) return; end
-    
-    
-    
+
+
+
 
 
     function return_error()
@@ -188,7 +192,307 @@ function turns = generate_solution(face_color_code)
 					[k,l] = get_adjacent_edge_position(i,j);
 					if (face_colors(k,l) == 3)
 						%move edge
-						
+						switch i
+                        case 1
+                            switch j
+                            case 2
+                                turns = [turns, 10,4,9,3,1,3,2];
+                            case 4
+                                turns = [turns, 4,10,4,9,3,1,3,2];
+                            case 6
+                                turns = [turns, 3,3,10,4,9,3,1,3,2];
+                            case 8
+                                turns = [turns, 3,10,4,9,3,1,3,2];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 2
+                            switch j
+                            case 2
+                                turns = [turns, 3,1,3,2,4,10,4,9];
+                            case 4
+                                %do nothing
+                            case 8
+                                turns = [turns, 9,3,10,4,6,4,5,3,3,1,3,2,4,10,4,9];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 3
+                            switch j
+                            case 2
+                                turns = [turns, 3,3,1,3,2,4,10,4,9];
+                            case 4
+                                turns = [turns, 2,4,1,3,11,3,12,3,1,3,2,4,10,4,9];
+                            case 8
+                                turns = [turns, 1,3,2,4,10,4,9,4,1,3,2,4,10,4,9];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 4
+                            switch j
+                            case 2
+                                turns = [turns, 4,1,3,2,4,10,4,9];
+                            case 4
+                                turns = [turns, 12,4,11,3,5,3,6,4,4,1,3,2,4,10,4,9];
+                            case 8
+                                turns = [turns, 11,3,12,4,2,4,1,1,3,2,4,10,4,9];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 5
+                            switch j
+                            case 2
+                                turns = [turns, 1,3,2,4,10,4,9];
+                            case 4
+                                turns = [turns, 6,4,5,3,9,3,10,4,1,3,2,4,10,4,9];
+                            case 8
+                                turns = [turns, 5,3,6,4,12,4,11,3,1,3,2,4,10,4,9];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        otherwise
+                            return_error;
+                            return;
+                        end
+					end
+				end
+			end
+		end
+        refresh_face_colors();
+        for i = 1:6
+			for j = 2:2:8
+				if (face_colors(i,j) == 3)
+					[k,l] = get_adjacent_edge_position(i,j);
+					if (face_colors(k,l) == 4)
+						%move edge
+						switch i
+                        case 1
+                            switch j
+                            case 8
+                                turns = [turns, 2,4,1,3,11,3,12];
+                            case 2
+                                turns = [turns, 4,2,4,1,3,11,3,12];
+                            case 4
+                                turns = [turns, 3,3,2,4,1,3,11,3,12];
+                            case 6
+                                turns = [turns, 3,2,4,1,3,11,3,12];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 3
+                            switch j
+                            case 2
+                                turns = [turns, 3,11,3,12,4,2,4,1];
+                            case 4
+                                %do nothing
+                            case 8
+                                turns = [turns, 1,3,2,4,10,4,9,3,3,11,3,12,4,2,4,1];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 4
+                            switch j
+                            case 2
+                                turns = [turns, 3,3,11,3,12,4,2,4,1];
+                            case 4
+                                turns = [turns, 12,4,11,3,5,3,6,3,11,3,12,4,2,4,1];
+                            case 8
+                                turns = [turns, 11,3,12,4,2,4,1,4,11,3,12,4,2,4,1];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 5
+                            switch j
+                            case 2
+                                turns = [turns, 4,11,3,12,4,2,4,1];
+                            case 4
+                                turns = [turns, 6,4,5,3,9,3,10,4,4,11,3,12,4,2,4,1];
+                            case 8
+                                turns = [turns, 5,3,6,4,12,4,11,11,3,12,4,2,4,1];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 2
+                            switch j
+                            case 2
+                                turns = [turns, 11,3,12,4,2,4,1];
+                            case 4
+                                turns = [turns, 10,4,9,3,1,3,2,4,11,3,12,4,2,4,1];
+                            case 8
+                                turns = [turns, 9,3,10,4,6,4,5,3,11,3,12,4,2,4,1];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        otherwise
+                            return_error;
+                            return;
+                        end
+					end
+				end
+			end
+		end
+        refresh_face_colors();
+        for i = 1:6
+			for j = 2:2:8
+				if (face_colors(i,j) == 4)
+					[k,l] = get_adjacent_edge_position(i,j);
+					if (face_colors(k,l) == 5)
+						%move edge
+						switch i
+                        case 1
+                            switch j
+                            case 6
+                                turns = [turns, 12,4,11,3,5,3,6];
+                            case 8
+                                turns = [turns, 4,12,4,11,3,5,3,6];
+                            case 2
+                                turns = [turns, 3,3,12,4,11,3,5,3,6];
+                            case 4
+                                turns = [turns, 3,12,4,11,3,5,3,6];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 4
+                            switch j
+                            case 2
+                                turns = [turns, 3,5,3,6,4,12,4,11];
+                            case 4
+                                %do nothing
+                            case 8
+                                turns = [turns, 11,3,12,4,2,4,1,3,3,5,3,6,4,12,4,11];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 5
+                            switch j
+                            case 2
+                                turns = [turns, 3,3,5,3,6,4,12,4,11];
+                            case 4
+                                turns = [turns, 5,4,6,3,9,3,10,3,5,3,6,4,12,4,11];
+                            case 8
+                                turns = [turns, 5,3,6,4,12,4,11,4,5,3,6,4,12,4,11];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 2
+                            switch j
+                            case 2
+                                turns = [turns, 4,5,3,6,4,12,4,11];
+                            case 4
+                                turns = [turns, 10,4,9,3,1,3,2,4,4,5,3,6,4,12,4,11];
+                            case 8
+                                turns = [turns, 9,3,10,4,5,4,6,6,3,5,4,12,4,11];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 3
+                            switch j
+                            case 2
+                                turns = [turns, 5,3,6,4,12,4,11];
+                            case 4
+                                turns = [turns, 2,4,1,3,11,3,12,4,5,3,6,4,12,4,11];
+                            case 8
+                                turns = [turns, 1,3,2,4,10,4,9,3,5,3,6,4,12,4,11];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        otherwise
+                            return_error;
+                            return;
+                        end
+					end
+				end
+			end
+		end
+        refresh_face_colors();
+        for i = 1:6
+			for j = 2:2:8
+				if (face_colors(i,j) == 5)
+					[k,l] = get_adjacent_edge_position(i,j);
+					if (face_colors(k,l) == 2)
+						%move edge
+						switch i
+                        case 1
+                            switch j
+                            case 4
+                                turns = [turns, 6,4,5,3,9,3,10];
+                            case 6
+                                turns = [turns, 4,6,4,5,3,9,3,10];
+                            case 8
+                                turns = [turns, 3,3,6,4,5,3,9,3,10];
+                            case 2
+                                turns = [turns, 3,6,4,5,3,9,3,10];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 5
+                            switch j
+                            case 2
+                                turns = [turns, 3,9,3,10,4,5,4,6];
+                            case 4
+                                %do nothing
+                            case 8
+                                turns = [turns, 5,3,6,4,12,4,11,3,3,9,3,10,4,6,4,5];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 2
+                            switch j
+                            case 2
+                                turns = [turns, 3,3,9,3,10,4,6,4,5];
+                            case 4
+                                turns = [turns, 9,4,10,3,1,3,2,3,9,3,10,4,6,4,5];
+                            case 8
+                                turns = [turns, 9,3,10,4,6,4,5,4,9,3,10,4,6,4,5];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 3
+                            switch j
+                            case 2
+                                turns = [turns, 4,9,3,10,4,6,4,5];
+                            case 4
+                                turns = [turns, 2,4,1,3,11,3,12,4,4,9,3,10,4,6,4,5];
+                            case 8
+                                turns = [turns, 1,3,2,4,9,4,10,10,3,9,4,6,4,5];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        case 4
+                            switch j
+                            case 2
+                                turns = [turns, 9,3,10,4,6,4,5];
+                            case 4
+                                turns = [turns, 12,4,11,3,5,3,6,4,9,3,10,4,6,4,5];
+                            case 8
+                                turns = [turns, 11,3,12,4,6,4,1,3,9,3,10,4,6,4,5];
+                            otherwise
+                                return_error;
+                                return;
+                            end
+                        otherwise
+                            return_error;
+                            return;
+                        end
 					end
 				end
 			end
@@ -212,7 +516,7 @@ function turns = generate_solution(face_color_code)
                 return;
             end
         end
-        
+
         if isequal(white_edges, [1 2 3 4])
             %do nothing
         elseif isequal(white_edges, [3 4 1 2])
@@ -230,7 +534,7 @@ function turns = generate_solution(face_color_code)
             turns = [turns, 5,4,5,3,5,3,5,4,6,4,5,5];
         elseif isequal(white_edges, [3 1 2 4])
             turns = [turns, 11,4,11,3,11,3,11,4,12,4,11,11];
-            
+
         elseif isequal(white_edges, [1 3 4 2])
             turns = [turns, 1,1,3,1,3,2,4,2,4,2,3,2];
         elseif isequal(white_edges, [3 2 4 1])
@@ -276,8 +580,8 @@ function turns = generate_solution(face_color_code)
                 return;
             end
         end
-        
-        
+
+
         if isequal(white_corners, [1 2 3 4])
             %do nothing
         elseif isequal(white_corners, [2 3 4 1])
@@ -295,7 +599,7 @@ function turns = generate_solution(face_color_code)
             turns = [turns, 6,2,12,5,10,6,11,5,1,12,2,9,1,11,4];
         elseif isequal(white_corners, [2 1 4 3])
             turns = [turns, 6,2,12,5,10,6,11,5,1,12,2,9,1,11,3,3];
-            
+
         elseif isequal(white_corners, [3 2 4 1])
             turns = [turns, 6,11,6,9,9,5,12,6,9,9,5,5];
         elseif isequal(white_corners, [4 3 1 2])
@@ -313,7 +617,7 @@ function turns = generate_solution(face_color_code)
             turns = [turns, 3,3,6,11,6,9,9,5,12,6,9,9,5,5,4];
         elseif isequal(white_corners, [2 3 1 4])
             turns = [turns, 3,3,6,11,6,9,9,5,12,6,9,9,5,5,3,3];
-            
+
         elseif isequal(white_corners, [2 4 1 3])
             turns = [turns, 3,6,11,6,9,9,5,12,6,9,9,5,5];
         elseif isequal(white_corners, [3 1 2 4])
@@ -322,7 +626,7 @@ function turns = generate_solution(face_color_code)
             turns = [turns, 3,6,11,6,9,9,5,12,6,9,9,5,5,4];
         elseif isequal(white_corners, [4 2 3 1])
             turns = [turns, 3,6,11,6,9,9,5,12,6,9,9,5,5,3,3];
-            
+
         elseif isequal(white_corners, [1 3 2 4])
             turns = [turns, 4,6,11,6,9,9,5,12,6,9,9,5,5];
         elseif isequal(white_corners, [2 4 3 1])
@@ -433,7 +737,7 @@ function turns = generate_solution(face_color_code)
                 correct_white(end+1) = i;
             end
         end
-        
+
         switch length(correct_white)
             case 0
                 turns = [turns, 9,1,3,2,4,10,11,3,5,4,6,12];
