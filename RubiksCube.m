@@ -178,10 +178,10 @@ end
         for i = 1:12
             set(rotation_buttons(i), 'Enable', 'off');
         end
-        for i = 0:1
-            turn_arrows(i+1) = patch(arrow_positions(dir, (1+9*i):(3+9*i)), arrow_positions(dir, (4+9*i):(6+9*i)), arrow_positions(dir, (7+9*i):(9+9*i)), [0.5 0.1 0.5]);
-        end
         if (checkbox_arrows.Value)
+            for i = 0:1
+                turn_arrows(i+1) = patch(arrow_positions(dir, (1+9*i):(3+9*i)), arrow_positions(dir, (4+9*i):(6+9*i)), arrow_positions(dir, (7+9*i):(9+9*i)), [0.5 0.1 0.5]);
+            end
             pause(1);
         end
         switch dir
@@ -211,7 +211,9 @@ end
                 reverse_turn_b();
         end
         update_patches(cmenu);
-        hide_arrows(turn_arrows);
+        if (checkbox_arrows.Value)
+            hide_arrows(turn_arrows);
+        end
         if (button_group.UserData == 1)
             for i = 1:12
                 set(rotation_buttons(i), 'Enable', 'on');
@@ -429,6 +431,8 @@ end
 
 
 
+
+
     function update_patches(cmenu)
         for i = 1:6
             for j = 1:8
@@ -449,9 +453,6 @@ end
 
 	function solve_cube(~, ~)
 		face_color_code = zeros(6,8);
-		elon.Value = 0.9;
-		azim.Value = 0.625;
-		rotate_view();
         button_solve.Enable = 'off';
 		for i = 1:6
 			for j = 1:8
@@ -497,27 +498,33 @@ end
         button_solve.Enable = 'on';
     end
 
+
+
     function next_step(~, ~)
         button_next.Enable = 'off';
         button_prev.Enable = 'off';
+        elon.Value = 0.9;
+		azim.Value = 0.625;
+		rotate_view();
         turn(turn_list(solve_step));
-        button_next.Enable = 'on';
         button_prev.Enable = 'on';
         solve_step = solve_step + 1;
-        if (solve_step > length(turn_list))
-            button_next.Enable = 'off';
-		end
+        if ~(solve_step > length(turn_list))
+            button_next.Enable = 'on';
+        end
     end
 
     function prev_step(~, ~)
         button_next.Enable = 'off';
         button_prev.Enable = 'off';
+        elon.Value = 0.9;
+		azim.Value = 0.625;
+		rotate_view();
         turn(get_reverse_turn(turn_list(solve_step - 1)));
         button_next.Enable = 'on';
-        button_prev.Enable = 'on';
         solve_step = solve_step - 1;
-        if (solve_step == 1)
-            button_prev.Enable = 'off';
+        if (solve_step ~= 1)
+            button_prev.Enable = 'on';
         end
     end
 
@@ -528,6 +535,9 @@ end
             reverse_turn = current_turn + 1;
         end
     end
+
+
+
 
 
 main();

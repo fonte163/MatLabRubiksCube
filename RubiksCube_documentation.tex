@@ -1,0 +1,41 @@
+\documentclass[a4paper,12pt]{scrartcl}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{listings}
+
+\usepackage[headsepline]{scrlayer-scrpage}
+\pagestyle{scrheadings}
+\clearscrheadfoot
+\ohead{Elisa Junghans\\Mirko Dransfeld}
+\ihead{Wissenschaftliches Rechnen\\SS 19}
+\chead{Praktikum MatLab\\Rubik's Cube}
+\cfoot*{\pagemark}
+
+\title{Rubik's Cube}
+\subtitle{MatLab Praktikum}
+\author{Elisa Junghans\and Mirko Dransfeld}
+\date{}
+
+\usepackage[bookmarks]{hyperref}
+
+\hypersetup{
+    unicode=true,
+    colorlinks=true,
+    linkcolor=black,
+    linktoc=all,
+    citecolor=black,
+    filecolor=black,
+    urlcolor=black,
+    final=true
+}
+
+\begin{document}
+  \maketitle
+  \lstinputlisting[language=Matlab, firstline=100, lastline=120]{RubiksCube.m}
+\end{document}

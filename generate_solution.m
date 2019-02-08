@@ -12,11 +12,11 @@ function turns = generate_solution(face_color_code)
 
 
 
-	%yellow_corner_position();
+	yellow_corner_position();
 
-    %if (turns == -1) return; end
+    if (turns == -1) return; end
 
-    %refresh_face_colors();
+    refresh_face_colors();
 
 
 
@@ -25,7 +25,6 @@ function turns = generate_solution(face_color_code)
     if (turns == -1) return; end
 
     refresh_face_colors();
-
 
 
 	mid_edges();
@@ -63,18 +62,121 @@ function turns = generate_solution(face_color_code)
     white_edge_permutation();
 
     if (turns == -1) return; end
+    
+    
+    clean_up_output();
 
 
 
-
-
+    
+    
+    
+    
+    function clean_up_output()
+        mask = '(01|10|23|32|45|54|67|76|89|98|;:|:;|0000|1111|2222|3333|4444|5555|6666|7777|8888|9999|::::|;;;;)';
+        buf = cell2mat(regexp(char(turns+47), mask, 'split'))-47;
+        while (~isequal(turns, buf))
+            turns = buf;
+            buf = cell2mat(regexp(char(turns+47), mask, 'split'))-47;
+        end
+    end
+    
     function return_error()
         disp(turns);
         turns = -1;
     end
 
     function yellow_corner_position()
-
+        current_edge = [2 3 6]; % yrb
+        if (isequal(sort([face_colors(1,1), face_colors(4,3), face_colors(5,1)]), current_edge))
+            turns = [turns, 1,3,3,2];
+        elseif (isequal(sort([face_colors(1,3), face_colors(3,3), face_colors(4,1)]), current_edge))
+            turns = [turns, 10,3,9];
+        elseif (isequal(sort([face_colors(1,5), face_colors(2,3), face_colors(3,1)]), current_edge))
+            turns = [turns, 1,3,2];
+        elseif (isequal(sort([face_colors(1,7), face_colors(5,3), face_colors(2,1)]), current_edge))
+            turns = [turns, 1,4,2];
+        elseif (isequal(sort([face_colors(4,5), face_colors(5,7), face_colors(6,7)]), current_edge))
+            turns = [turns, 1,5,3,3,2,6];
+        elseif (isequal(sort([face_colors(4,7), face_colors(3,5), face_colors(6,5)]), current_edge))
+            turns = [turns, 10,11,3,9,12];
+        elseif (isequal(sort([face_colors(2,5), face_colors(3,7), face_colors(6,3)]), current_edge))
+            %do nothing
+        elseif (isequal(sort([face_colors(2,7), face_colors(5,5), face_colors(6,1)]), current_edge))
+            turns = [turns, 6,1,4,5,2];
+        else
+            return_error();
+            return;
+        end
+        
+        refresh_face_colors();
+        current_edge = [3 4 6]; % ybo
+        if (isequal(sort([face_colors(1,1), face_colors(4,3), face_colors(5,1)]), current_edge))
+            turns = [turns, 2,3,1];
+        elseif (isequal(sort([face_colors(1,3), face_colors(3,3), face_colors(4,1)]), current_edge))
+            turns = [turns, 11,3,12];
+        elseif (isequal(sort([face_colors(1,5), face_colors(2,3), face_colors(3,1)]), current_edge))
+            turns = [turns, 11,4,12];
+        elseif (isequal(sort([face_colors(1,7), face_colors(5,3), face_colors(2,1)]), current_edge))
+            turns = [turns, 11,3,3,12];
+        elseif (isequal(sort([face_colors(4,5), face_colors(5,7), face_colors(6,7)]), current_edge))
+            turns = [turns, 2,5,3,1,6];
+        elseif (isequal(sort([face_colors(4,7), face_colors(3,5), face_colors(6,5)]), current_edge))
+            %do nothing
+        elseif (isequal(sort([face_colors(2,5), face_colors(3,7), face_colors(6,3)]), current_edge))
+            turns = [turns, 11,10,4,12,9];
+        elseif (isequal(sort([face_colors(2,7), face_colors(5,5), face_colors(6,1)]), current_edge))
+            turns = [turns, 2,6,3,3,1,5];
+        else
+            return_error();
+            return;
+        end
+        
+        refresh_face_colors();
+        current_edge = [4 5 6]; % yog
+        if (isequal(sort([face_colors(1,1), face_colors(4,3), face_colors(5,1)]), current_edge))
+            turns = [turns, 5,3,6];
+        elseif (isequal(sort([face_colors(1,3), face_colors(3,3), face_colors(4,1)]), current_edge))
+            turns = [turns, 5,4,6];
+        elseif (isequal(sort([face_colors(1,5), face_colors(2,3), face_colors(3,1)]), current_edge))
+            turns = [turns, 5,3,3,6];
+        elseif (isequal(sort([face_colors(1,7), face_colors(5,3), face_colors(2,1)]), current_edge))
+            turns = [turns, 12,3,11];
+        elseif (isequal(sort([face_colors(4,5), face_colors(5,7), face_colors(6,7)]), current_edge))
+            %do nothing
+        elseif (isequal(sort([face_colors(4,7), face_colors(3,5), face_colors(6,5)]), current_edge))
+            turns = [turns, 2,5,4,1,6];
+        elseif (isequal(sort([face_colors(2,5), face_colors(3,7), face_colors(6,3)]), current_edge))
+            turns = [turns, 1,5,3,3,2,6];
+        elseif (isequal(sort([face_colors(2,7), face_colors(5,5), face_colors(6,1)]), current_edge))
+            turns = [turns, 9,12,3,10,11];
+        else
+            return_error();
+            return;
+        end
+        
+        refresh_face_colors();
+        current_edge = [2 5 6]; % ygr
+        if (isequal(sort([face_colors(1,1), face_colors(4,3), face_colors(5,1)]), current_edge))
+            turns = [turns, 9,4,10];
+        elseif (isequal(sort([face_colors(1,3), face_colors(3,3), face_colors(4,1)]), current_edge))
+            turns = [turns, 9,3,3,10];
+        elseif (isequal(sort([face_colors(1,5), face_colors(2,3), face_colors(3,1)]), current_edge))
+            turns = [turns, 6,3,5];
+        elseif (isequal(sort([face_colors(1,7), face_colors(5,3), face_colors(2,1)]), current_edge))
+            turns = [turns, 9,3,10];
+        elseif (isequal(sort([face_colors(4,5), face_colors(5,7), face_colors(6,7)]), current_edge))
+            turns = [turns, 9,12,4,10,11];
+        elseif (isequal(sort([face_colors(4,7), face_colors(3,5), face_colors(6,5)]), current_edge))
+            turns = [turns, 2,6,3,3,1,5];
+        elseif (isequal(sort([face_colors(2,5), face_colors(3,7), face_colors(6,3)]), current_edge))
+            turns = [turns, 1,6,3,2,5];
+        elseif (isequal(sort([face_colors(2,7), face_colors(5,5), face_colors(6,1)]), current_edge))
+            %do nothing
+        else
+            return_error();
+            return;
+        end
     end
 
     function yellow_corner_orientation()
@@ -489,7 +591,7 @@ function turns = generate_solution(face_color_code)
                 k = 6;
                 l = 4;
             case 8
-                k = 3;
+                k = 2;
                 l = 4;
             end
         case 4
@@ -735,7 +837,7 @@ function turns = generate_solution(face_color_code)
                             case 2
                                 turns = [turns, 3,3,5,3,6,4,12,4,11];
                             case 4
-                                turns = [turns, 5,4,6,3,9,3,10,3,5,3,6,4,12,4,11];
+                                turns = [turns, 9,3,10,4,6,4,5,3,12,4,11,3,5,3,6,4]; %5,4,6,3,9,3,10,3,5,3,6,4,12,4,11
                             case 8
                                 turns = [turns, 5,3,6,4,12,4,11,4,5,3,6,4,12,4,11];
                             otherwise
@@ -749,7 +851,7 @@ function turns = generate_solution(face_color_code)
                             case 4
                                 turns = [turns, 10,4,9,3,1,3,2,4,4,5,3,6,4,12,4,11];
                             case 8
-                                turns = [turns, 9,3,10,4,5,4,6,6,3,5,4,12,4,11];
+                                turns = [turns, 6,4,5,3,9,3,10,4,4,12,4,11,3,5,3,6,4];%9,3,10,4,5,4,6,6,3,5,4,12,4,11
                             otherwise
                                 return_error;
                                 return;
@@ -799,7 +901,7 @@ function turns = generate_solution(face_color_code)
                         case 5
                             switch j
                             case 2
-                                turns = [turns, 3,9,3,10,4,5,4,6];
+                                turns = [turns, 3,9,3,10,4,6,4,5,3]; %3,9,3,10,4,5,4,6
                             case 4
                                 %do nothing
                             case 8
@@ -997,7 +1099,6 @@ function turns = generate_solution(face_color_code)
         end
     end
 
-
     function white_corner_orientation()
         correct_white = [];
         for i = 1:2:7
@@ -1084,7 +1185,6 @@ function turns = generate_solution(face_color_code)
         end
     end
 
-
     function white_edge_orientation()
         correct_white = [];
         for i = 2:2:8
@@ -1127,6 +1227,11 @@ function turns = generate_solution(face_color_code)
             next_turn = length(turns)+1;
         end
     end
+
+
+
+
+
 
 
 
