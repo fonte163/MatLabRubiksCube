@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
 
 \usepackage[headsepline]{scrlayer-scrpage}
 \pagestyle{scrheadings}
@@ -24,6 +25,7 @@
 
 \usepackage[bookmarks]{hyperref}
 
+
 \hypersetup{
     unicode=true,
     colorlinks=true,
@@ -34,8 +36,28 @@
     urlcolor=black,
     final=true
 }
+\lstset{ %
+      basicstyle=\small\ttfamily,
+      language=Matlab,
+      showtabs=false,
+      tabsize=2,
+      captionpos=t,
+      breaklines=true,
+      extendedchars=true,
+      showstringspaces=false,
+      flexiblecolumns=true,
+      numbers=left,
+      numbersep=.5em,
+      stepnumber=1,
+      numberstyle=\color{Gray},
+      keywordstyle=\color{Blue},
+      commentstyle=\color{ForestGreen}
+}
+\newcommand{\mcode}[3]{
+  \lstinputlisting[firstnumber=#1, linerange={#1-#2}]{#3.m}
+}
 
 \begin{document}
   \maketitle
-  \lstinputlisting[language=Matlab, firstline=100, lastline=120]{RubiksCube.m}
+  \mcode{84}{104}{RubiksCube}
 \end{document}
