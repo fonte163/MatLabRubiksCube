@@ -9,6 +9,7 @@
 \usepackage{stmaryrd}
 \usepackage{listings}
 \usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
 
 \usepackage[headsepline]{scrlayer-scrpage}
 \pagestyle{scrheadings}
@@ -23,9 +24,6 @@
 \author{Elisa Junghans\and Mirko Dransfeld}
 \date{}
 
-\usepackage[bookmarks]{hyperref}
-
-
 \hypersetup{
     unicode=true,
     colorlinks=true,
@@ -36,22 +34,23 @@
     urlcolor=black,
     final=true
 }
+
 \lstset{ %
-      basicstyle=\small\ttfamily,
-      language=Matlab,
-      showtabs=false,
-      tabsize=2,
-      captionpos=t,
-      breaklines=true,
-      extendedchars=true,
-      showstringspaces=false,
-      flexiblecolumns=true,
-      numbers=left,
-      numbersep=.5em,
-      stepnumber=1,
-      numberstyle=\color{Gray},
-      keywordstyle=\color{Blue},
-      commentstyle=\color{ForestGreen}
+    basicstyle=\small\ttfamily,
+    language=Matlab,
+    showtabs=false,
+    tabsize=2,
+    captionpos=t,
+    breaklines=true,
+    extendedchars=true,
+    showstringspaces=false,
+    flexiblecolumns=true,
+    numbers=left,
+    numbersep=.5em,
+    stepnumber=1,
+    numberstyle=\color{Gray},
+    keywordstyle=\color{Blue},
+    commentstyle=\color{ForestGreen}
 }
 \newcommand{\mcode}[3]{
   \lstinputlisting[firstnumber=#1, linerange={#1-#2}]{#3.m}
@@ -59,5 +58,50 @@
 
 \begin{document}
   \maketitle
-  \mcode{84}{104}{RubiksCube}
+
+  \section{Aufbau des Programms}
+    Zur erleichterten Bearbeitung und Übersichtlichkeit haben wir das Programm in zwei Dateien geteilt. Die Datei \textbf{\nameref{sec:aufbau1}} beinhaltet das Erstellen der grafischen Oberfläche und die Datei \textbf{\nameref{sec:aufbau2}} den Lösungsalgorithmus.
+
+    \subsection{RubiksCube.m}\label{sec:aufbau1}
+      Zu Beginn sei gesagt, dass alles in einer großen Funktion mit sehr vielen \emph{nested functions} geschrieben ist. Dies hat den Grund, dass die MatLab-Version 2015b in einer Datei entweder nur eine Funktion oder ein Skript unterstützt, nicht beides. Dazu sei gesagt, die Version 2018b hat mit solchen Dateien keine Probleme.
+      \newline
+
+      In Zeile 3--17 werden globale Variablen gesetzt. Diese werden dann später von anderen Funktionen aufgerufen und verändert. Die Zeilen 20--42 initialisieren Konstanten, wie zum Beispiel die Positionen der Flächen des Würfels im drei-dimensionalen Raum (Zeilen 22--27).
+
+      Dann folgt die Initialisierung des Würfels. Dieser ist in der Variablen \textbf{face\_color\_rgb} gespeichert.
+      \mcode{44}{49}{RubiksCube}
+      Damit wird für jede der 6 Seiten (\textbf{i}) und jede der 8 veränderbaren Flächen pro Seite (\textbf{j}) die zugehörige Farbe aus \textbf{possible\_colors} hinterlegt.
+
+      \subsubsection{main()}\label{sec:main}
+        Hier wird zuerst die Figur erzeugt, in der anschließend gezeichnet wird. Die Optionen werden in der Form \texttt{figure(Option1, Wert1, Option2, Wert2, \dots)} übergeben.
+        \mcode{53}{53}{RubiksCube}
+        \begin{itemize}
+          \item{\textbf{Name}} `Rubiks Cube' setzt den Namen der Figur
+          \item{\textbf{NumberTitle}} `off' verhindert, dass MatLab dem Fenster eine nummerierte Überschrift gibt
+          \item{\textbf{MenuBar}} `none' bedeutet, dass keine Menüzeile gezeichnet wird
+          \item{\textbf{resize}} `off' verhindert dass Verändern der Größe des Fensters durch den User
+        \end{itemize}
+
+        Danach werden mit Hilfe von \textbf{\nameref{sec:elonUI}} und \textbf{\nameref{sec:azimUI}} den Variablen \textbf{elon} und \textbf{azim} ihre jeweiligen \emph{Slider} zugewiesen.
+
+        Es folgen Aufrufe von \textbf{\nameref{sec:uiSetup}} und \textbf{\nameref{sec:generatePatches}}, die die restlichen Elemente des UIs anlegen.
+
+      \subsubsection{ui\_setup()}\label{sec:uiSetup}
+        Hier werden zunächst mit Hilfe von \textbf{\nameref{sec:patch}} die Elemente des UIs erzeugt und, wenn diese später noch verändert werden müssen, globalen Variablen zugewiesen.
+
+
+      \subsubsection{get\_elon\_ui()}\label{sec:elonUI}
+
+      \subsubsection{get\_azim\_ui()}\label{sec:azimUI}
+
+      \subsubsection{generate\_patch\_and\_ui\_menu()}\label{sec:generatePatches}
+
+
+\newpage
+    \subsection{generate\_solution.m}\label{sec:aufbau2}
+      \Large{TODO}
+
+
+  \section{besondere MatLab Funktionen}
+    \subsection{patch()}\label{sec:patch}
 \end{document}

@@ -47,14 +47,15 @@ for i = 1:6
         face_color_rgb(i,j,:) = possible_colors(i,:);
     end
 end
+main();
 
     function main()
-        fig = figure('Name','Rubiks Cube','NumberTitle','off','MenuBar','none','resize','off');
+        figure('Name','Rubiks Cube','NumberTitle','off','MenuBar','none','resize','off');
         elon = get_elon_ui();
         azim = get_azim_ui();
 
         ui_setup();
-        generate_and_patch_ui_menu();
+        generate_patch_and_ui_menu();
     end
 
     function ui_setup()
@@ -74,10 +75,10 @@ end
         for i = 1:12
             rotation_buttons(i) = uicontrol('Style', 'pushbutton', 'UserData', i, 'Position', [10 350-20*i 40 20], 'String', rotation_button_labels{i}, 'Callback', @manual_turn, 'Enable', 'off');
         end
-        rotate_view();
         axis off
         axis equal
 
+        rotate_view();
         generate_centerpieces();
     end
 
@@ -128,7 +129,7 @@ end
         patch([1,2,2,1],[1,1,2,2],[0,0,0,0],'y');
     end
 
-    function generate_and_patch_ui_menu()
+    function generate_patch_and_ui_menu()
         for i = 1:6
             for j = 1:8
                 cmenu(i, j) = generate_single_ui_menu(i, j);
@@ -540,6 +541,5 @@ end
 
 
 
-main();
 
 end
