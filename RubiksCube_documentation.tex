@@ -72,16 +72,16 @@
 
 
 \newcommand{\chap}[2]{
-  \chapter{#1}\label{chap:#2}
+  \chapter{#1}\label{#2}
 }
 \renewcommand{\sec}[2]{
-  \section{#1}\label{sec:#2}
+  \section{#1}\label{#2}
 }
 \newcommand{\subsec}[2]{
-  \subsection{#1}\label{subsec:#2}
+  \subsection{#1}\label{#2}
 }
 \newcommand{\subsubsec}[2]{
-  \subsubsection{#1}\label{subsubsec:#2}
+  \subsubsection{#1}\label{#2}
 }
 
 %%
@@ -98,7 +98,6 @@
 %%  \subsubsec{}{}  unteruntersektion
 %%
 %%  alle funktionieren mit z.B. \chap{<Überschrift>}{<Labelname>}
-%%  dazu sei gesagt, dass alle Labelnamen mit einem Präfix versehen werden, dieser gleicht dem Funktionsnamen. Also in dem Beispiel wäre es chap:<Labelname>
 %%  Die Labelnamen sind dafür um später auf die Funktion verweisen zu können, siehe \coderef
 %%  Wichtig: Unterstriche in den Überschrifter escapen mit \_ !
 %%
@@ -124,7 +123,7 @@
   \maketitle
 
   \chap{Aufbau des Programms}{aufbau}
-    Zur erleichterten Bearbeitung und Übersichtlichkeit haben wir das Programm in zwei Dateien geteilt. Die Datei \textbf{\nameref{sec:RCube}} beinhaltet das Erstellen der grafischen Oberfläche und die Datei \textbf{\nameref{sec:solveCube}} den Lösungsalgorithmus.
+    Zur erleichterten Bearbeitung und Übersichtlichkeit haben wir das Programm in zwei Dateien geteilt. Die Datei \textbf{\nameref{RCube}} beinhaltet das Erstellen der grafischen Oberfläche und die Datei \textbf{\nameref{solveCube}} den Lösungsalgorithmus.
 
     \sec{RubiksCube.m}{RCube}
       Zu Beginn sei gesagt, dass alles in einer großen Funktion mit sehr vielen \emph{nested functions} geschrieben ist. Dies hat den Grund, dass die MatLab-Version 2015b in einer Datei entweder nur eine Funktion oder ein Skript unterstützt, nicht beides. Dazu sei gesagt, die Version 2018b hat mit solchen Dateien keine Probleme.\\
@@ -136,7 +135,7 @@
       Damit wird für jede der 6 Seiten \codeinline{(i)} und jede der 8 veränderbaren Flächen pro Seite \codeinline{(j)} die zugehörige Farbe aus \codeinline{possible_colors} hinterlegt.
 
       \subsec{main()}{main}
-        Hier wird zuerst die Figur erzeugt, in der anschließend gezeichnet wird. Die Optionen werden in der Form \hyperref[sec:figure]{\codeinline{figure(Option1, Wert1, Option2, Wert2, ...)}} übergeben.
+        Hier wird zuerst die Figur erzeugt, in der anschließend gezeichnet wird. Die Optionen werden in der Form \hyperref[figure]{\codeinline{figure(Option1, Wert1, Option2, Wert2, ...)}} übergeben.
         \codeimport{53}{53}{RubiksCube}
         \begin{itemize}
           \item[\texttt{Name}] `Rubiks Cube' setzt den Namen der Figur
@@ -145,12 +144,12 @@
           \item[\texttt{resize}] `off' verhindert dass Verändern der Größe des Fensters durch den User
         \end{itemize}
 
-        Danach werden mit Hilfe von \coderef{subsec:elonUI} und \coderef{subsec:azimUI} den Variablen \codeinline{elon} und \codeinline{azim} ihre jeweiligen \emph{Slider} zugewiesen.
+        Danach werden mit Hilfe von \coderef{elonUI} und \coderef{azimUI} den Variablen \codeinline{elon} und \codeinline{azim} ihre jeweiligen \emph{Slider} zugewiesen.
 
-        Es folgen Aufrufe von \coderef{subsec:uiSetup} und \coderef{subsec:generatePatches}, die die restlichen Elemente des UIs anlegen.
+        Es folgen Aufrufe von \coderef{uiSetup} und \coderef{generatePatches}, die die restlichen Elemente des UIs anlegen.
 
       \subsec{ui\_setup()}{uiSetup}
-        Hier werden zunächst mit Hilfe von \coderef{sec:patch} die Elemente des UIs erzeugt und, wenn diese später noch verändert werden müssen, globalen Variablen zugewiesen.
+        Hier werden zunächst mit Hilfe von \coderef{patch} die Elemente des UIs erzeugt und, wenn diese später noch verändert werden müssen, globalen Variablen zugewiesen.
 
 
       \subsec{get\_elon\_ui()}{elonUI}
