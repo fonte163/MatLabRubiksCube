@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{scrartcl}
+\documentclass[a4paper,12pt]{scrreprt}
 
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
@@ -23,6 +23,11 @@
 \subtitle{MatLab Praktikum}
 \author{Elisa Junghans\and Mirko Dransfeld}
 \date{}
+
+\providecommand*{\elq}{‘}
+\providecommand*{\erq}{’}
+\providecommand*{\elqq}{“}
+\providecommand*{\erqq}{”}
 
 \hypersetup{
     unicode=true,
@@ -52,56 +57,115 @@
     keywordstyle=\color{Blue},
     commentstyle=\color{ForestGreen}
 }
-\newcommand{\mcode}[3]{
-  \lstinputlisting[firstnumber=#1, linerange={#1-#2}]{#3.m}
+
+\newcommand{\codeimport}[4][]{
+  \lstinputlisting[firstnumber=#2, linerange={#2-#3}#1]{#4.m}
 }
+
+\newcommand{\coderef}[1]{
+  \hyperref[#1]{\texttt{\nameref{#1}}}
+}
+
+\newcommand{\codeinline}[1]{
+  \lstinline!#1!
+}
+
+
+\newcommand{\chap}[2]{
+  \chapter{#1}\label{chap:#2}
+}
+\renewcommand{\sec}[2]{
+  \section{#1}\label{sec:#2}
+}
+\newcommand{\subsec}[2]{
+  \subsection{#1}\label{subsec:#2}
+}
+\newcommand{\subsubsec}[2]{
+  \subsubsection{#1}\label{subsubsec:#2}
+}
+
+%%
+%%
+%%
+%%  Hallo Elisa :)
+%%
+%%
+%%
+%%  Überschriften sind: (absteigende Wichtigkeit)
+%%  \chap{}{}       Kapitel
+%%  \sec{}{}        sektion   (ist das ein wort?)
+%%  \subsec{}{}     untersektion
+%%  \subsubsec{}{}  unteruntersektion
+%%
+%%  alle funktionieren mit z.B. \chap{<Überschrift>}{<Labelname>}
+%%  dazu sei gesagt, dass alle Labelnamen mit einem Präfix versehen werden, dieser gleicht dem Funktionsnamen. Also in dem Beispiel wäre es chap:<Labelname>
+%%  Die Labelnamen sind dafür um später auf die Funktion verweisen zu können, siehe \coderef
+%%  Wichtig: Unterstriche in den Überschrifter escapen mit \_ !
+%%
+%%
+%%
+%%  wenn du Code aus einer Datei einbinden willst: \codeimport{<Anfang>}{<Ende>}{<Datei>}
+%%  z.B.  \codeimport{44}{49}{RubiksCube}  fügt Zeilen 44-49 aus RubiksCube.m ein
+%%
+%%  wenn du eine bestimmte Funktion referenzieren willst: \coderef{<Labelname>}
+%%  z.B.  \coderef{sec:figure}  macht daraus figure() mit einem Verweis zu \sec{figure()}{figure}. (es setzt den Funktionsnamen ein, so wie du ihn benannt hast)
+%%
+%%  wenn du einen kleinen inline-codeteil haben willst: \codeinline{<Text>}
+%%  z.B.  \codeinline{figure(Option1, Wert1, ...)}  schreibt den <Text> als Code (inline)
+%%
+%%
+%%
+%%  Kannst dir ja das angucken was ich bisher geschrieben habe. Bei Problemen oder Feature-Wünschen -> Hey :)
+%%
+%%
+%%
 
 \begin{document}
   \maketitle
 
-  \section{Aufbau des Programms}
-    Zur erleichterten Bearbeitung und Übersichtlichkeit haben wir das Programm in zwei Dateien geteilt. Die Datei \textbf{\nameref{sec:aufbau1}} beinhaltet das Erstellen der grafischen Oberfläche und die Datei \textbf{\nameref{sec:aufbau2}} den Lösungsalgorithmus.
+  \chap{Aufbau des Programms}{aufbau}
+    Zur erleichterten Bearbeitung und Übersichtlichkeit haben wir das Programm in zwei Dateien geteilt. Die Datei \textbf{\nameref{sec:RCube}} beinhaltet das Erstellen der grafischen Oberfläche und die Datei \textbf{\nameref{sec:solveCube}} den Lösungsalgorithmus.
 
-    \subsection{RubiksCube.m}\label{sec:aufbau1}
-      Zu Beginn sei gesagt, dass alles in einer großen Funktion mit sehr vielen \emph{nested functions} geschrieben ist. Dies hat den Grund, dass die MatLab-Version 2015b in einer Datei entweder nur eine Funktion oder ein Skript unterstützt, nicht beides. Dazu sei gesagt, die Version 2018b hat mit solchen Dateien keine Probleme.
-      \newline
+    \sec{RubiksCube.m}{RCube}
+      Zu Beginn sei gesagt, dass alles in einer großen Funktion mit sehr vielen \emph{nested functions} geschrieben ist. Dies hat den Grund, dass die MatLab-Version 2015b in einer Datei entweder nur eine Funktion oder ein Skript unterstützt, nicht beides. Dazu sei gesagt, die Version 2018b hat mit solchen Dateien keine Probleme.\\
 
       In Zeile 3--17 werden globale Variablen gesetzt. Diese werden dann später von anderen Funktionen aufgerufen und verändert. Die Zeilen 20--42 initialisieren Konstanten, wie zum Beispiel die Positionen der Flächen des Würfels im drei-dimensionalen Raum (Zeilen 22--27).
 
-      Dann folgt die Initialisierung des Würfels. Dieser ist in der Variablen \textbf{face\_color\_rgb} gespeichert.
-      \mcode{44}{49}{RubiksCube}
-      Damit wird für jede der 6 Seiten (\textbf{i}) und jede der 8 veränderbaren Flächen pro Seite (\textbf{j}) die zugehörige Farbe aus \textbf{possible\_colors} hinterlegt.
+      Dann folgt die Initialisierung des Würfels. Dieser ist in der Variablen \codeinline{face_color_rgb} gespeichert.
+      \codeimport{44}{49}{RubiksCube}
+      Damit wird für jede der 6 Seiten \codeinline{(i)} und jede der 8 veränderbaren Flächen pro Seite \codeinline{(j)} die zugehörige Farbe aus \codeinline{possible_colors} hinterlegt.
 
-      \subsubsection{main()}\label{sec:main}
-        Hier wird zuerst die Figur erzeugt, in der anschließend gezeichnet wird. Die Optionen werden in der Form \texttt{figure(Option1, Wert1, Option2, Wert2, \dots)} übergeben.
-        \mcode{53}{53}{RubiksCube}
+      \subsec{main()}{main}
+        Hier wird zuerst die Figur erzeugt, in der anschließend gezeichnet wird. Die Optionen werden in der Form \hyperref[sec:figure]{\codeinline{figure(Option1, Wert1, Option2, Wert2, ...)}} übergeben.
+        \codeimport{53}{53}{RubiksCube}
         \begin{itemize}
-          \item{\textbf{Name}} `Rubiks Cube' setzt den Namen der Figur
-          \item{\textbf{NumberTitle}} `off' verhindert, dass MatLab dem Fenster eine nummerierte Überschrift gibt
-          \item{\textbf{MenuBar}} `none' bedeutet, dass keine Menüzeile gezeichnet wird
-          \item{\textbf{resize}} `off' verhindert dass Verändern der Größe des Fensters durch den User
+          \item[\texttt{Name}] `Rubiks Cube' setzt den Namen der Figur
+          \item[\texttt{NumberTitle}] `off' verhindert, dass MatLab dem Fenster eine nummerierte Überschrift gibt
+          \item[\texttt{MenuBar}] `none' bedeutet, dass keine Menüzeile gezeichnet wird
+          \item[\texttt{resize}] `off' verhindert dass Verändern der Größe des Fensters durch den User
         \end{itemize}
 
-        Danach werden mit Hilfe von \textbf{\nameref{sec:elonUI}} und \textbf{\nameref{sec:azimUI}} den Variablen \textbf{elon} und \textbf{azim} ihre jeweiligen \emph{Slider} zugewiesen.
+        Danach werden mit Hilfe von \coderef{subsec:elonUI} und \coderef{subsec:azimUI} den Variablen \codeinline{elon} und \codeinline{azim} ihre jeweiligen \emph{Slider} zugewiesen.
 
-        Es folgen Aufrufe von \textbf{\nameref{sec:uiSetup}} und \textbf{\nameref{sec:generatePatches}}, die die restlichen Elemente des UIs anlegen.
+        Es folgen Aufrufe von \coderef{subsec:uiSetup} und \coderef{subsec:generatePatches}, die die restlichen Elemente des UIs anlegen.
 
-      \subsubsection{ui\_setup()}\label{sec:uiSetup}
-        Hier werden zunächst mit Hilfe von \textbf{\nameref{sec:patch}} die Elemente des UIs erzeugt und, wenn diese später noch verändert werden müssen, globalen Variablen zugewiesen.
-
-
-      \subsubsection{get\_elon\_ui()}\label{sec:elonUI}
-
-      \subsubsection{get\_azim\_ui()}\label{sec:azimUI}
-
-      \subsubsection{generate\_patch\_and\_ui\_menu()}\label{sec:generatePatches}
+      \subsec{ui\_setup()}{uiSetup}
+        Hier werden zunächst mit Hilfe von \coderef{sec:patch} die Elemente des UIs erzeugt und, wenn diese später noch verändert werden müssen, globalen Variablen zugewiesen.
 
 
-\newpage
-    \subsection{generate\_solution.m}\label{sec:aufbau2}
+      \subsec{get\_elon\_ui()}{elonUI}
+
+      \subsec{get\_azim\_ui()}{azimUI}
+
+      \subsec{generate\_patch\_and\_ui\_menu()}{generatePatches}
+
+
+\clearpage
+    \sec{generate\_solution.m}{solveCube}
       \Large{TODO}
 
 
-  \section{besondere MatLab Funktionen}
-    \subsection{patch()}\label{sec:patch}
+  \chap{besondere MatLab Funktionen}{functions}
+    \sec{figure()}{figure}
+    \sec{patch()}{patch}
 \end{document}
