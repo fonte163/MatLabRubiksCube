@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{scrreprt}
+\documentclass[a4paper,11pt]{scrreprt}
 
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
@@ -32,11 +32,11 @@
 \hypersetup{
     unicode=true,
     colorlinks=true,
-    linkcolor=black,
+    linkcolor=Magenta,
     linktoc=all,
-    citecolor=black,
-    filecolor=black,
-    urlcolor=black,
+    citecolor=NavyBlue,
+    filecolor=NavyBlue,
+    urlcolor=NavyBlue,
     final=true
 }
 
@@ -63,11 +63,13 @@
 }
 
 \newcommand{\coderef}[1]{
-  \hyperref[#1]{\texttt{\nameref{#1}}}
+  \texttt{\nameref{#1}}
 }
-
 \newcommand{\codeinline}[1]{
   \lstinline!#1!
+}
+\newcommand{\codecustomref}[2]{
+  \hyperref[#2]{\lstinline!#1!}
 }
 
 
@@ -123,48 +125,171 @@
   \maketitle
 
   \chap{Aufbau des Programms}{aufbau}
-    Zur erleichterten Bearbeitung und Übersichtlichkeit haben wir das Programm in zwei Dateien geteilt. Die Datei \textbf{\nameref{RCube}} beinhaltet das Erstellen der grafischen Oberfläche und die Datei \textbf{\nameref{solveCube}} den Lösungsalgorithmus.
+    Zur erleichterten Bearbeitung und Übersichtlichkeit haben wir das Programm in zwei Dateien geteilt. Die Datei \textbf{\nameref{RCube}} beinhaltet das Erstellen der grafischen Oberfläche und die Datei \textbf{\nameref{generateSolution}} den Lösungsalgorithmus.
 
     \sec{RubiksCube.m}{RCube}
       Zu Beginn sei gesagt, dass alles in einer großen Funktion mit sehr vielen \emph{nested functions} geschrieben ist. Dies hat den Grund, dass die MatLab-Version 2015b in einer Datei entweder nur eine Funktion oder ein Skript unterstützt, nicht beides. Dazu sei gesagt, die Version 2018b hat mit solchen Dateien keine Probleme.\\
 
       In Zeile 3--17 werden globale Variablen gesetzt. Diese werden dann später von anderen Funktionen aufgerufen und verändert. Die Zeilen 20--42 initialisieren Konstanten, wie zum Beispiel die Positionen der Flächen des Würfels im drei-dimensionalen Raum (Zeilen 22--27).
 
-      Dann folgt die Initialisierung des Würfels. Dieser ist in der Variablen \codeinline{face_color_rgb} gespeichert.
+      Dann folgt die Initialisierung des Würfels. Dieser ist in der Variablen \coderef{faceColorRgb} gespeichert.
       \codeimport{44}{49}{RubiksCube}
-      Damit wird für jede der 6 Seiten \codeinline{(i)} und jede der 8 veränderbaren Flächen pro Seite \codeinline{(j)} die zugehörige Farbe aus \codeinline{possible_colors} hinterlegt.
+      Damit wird für jede der 6 Seiten \codeinline{(i)} und jede der 8 veränderbaren Flächen pro Seite \codeinline{(j)} die zugehörige Farbe aus \coderef{possibleColors} hinterlegt.\\\\
+      Nach der initialisierung aller \nameref{RCubeFunctions} wird dann \coderef{main} aufgerufen.
 
-      \subsec{main()}{main}
-        Hier wird zuerst die Figur erzeugt, in der anschließend gezeichnet wird. Die Optionen werden in der Form \hyperref[figure]{\codeinline{figure(Option1, Wert1, Option2, Wert2, ...)}} übergeben.
-        \codeimport{53}{53}{RubiksCube}
-        \begin{itemize}
-          \item[\texttt{Name}] `Rubiks Cube' setzt den Namen der Figur
-          \item[\texttt{NumberTitle}] `off' verhindert, dass MatLab dem Fenster eine nummerierte Überschrift gibt
-          \item[\texttt{MenuBar}] `none' bedeutet, dass keine Menüzeile gezeichnet wird
-          \item[\texttt{resize}] `off' verhindert dass Verändern der Größe des Fensters durch den User
-        \end{itemize}
+      \subsec{Variablen}{RCubeVars}
+        \subsubsec{face\_positions}{facePositions}
 
-        Danach werden mit Hilfe von \coderef{elonUI} und \coderef{azimUI} den Variablen \codeinline{elon} und \codeinline{azim} ihre jeweiligen \emph{Slider} zugewiesen.
+        \subsubsec{arrow\_positions}{arrowPositions}
 
-        Es folgen Aufrufe von \coderef{uiSetup} und \coderef{generatePatches}, die die restlichen Elemente des UIs anlegen.
+        \subsubsec{elon}{elon}
+          Dies ist ein Schieberegler. Er befindet sich am linken unteren Rand des UI. Bei Veränderung löst er die Funktion \coderef{rotateView} aus. Verändert wird hierbei die Elongation des Blickpunktes.
 
-      \subsec{ui\_setup()}{uiSetup}
-        Hier werden zunächst mit Hilfe von \coderef{patch} die Elemente des UIs erzeugt und, wenn diese später noch verändert werden müssen, globalen Variablen zugewiesen.
+        \subsubsec{azim}{azim}
+          Dies ist genau wie \coderef{elon} ein Schieberegler, nur steuert dieser den Azimuth des Blickpunktes.
+
+        \subsubsec{cmenu}{cmenu}
+          Dies ist ein ein-Dimensionales \emph{Array}. Es speichert alle Kontextmenüs der einzelnen Flächen der Seiten des Würfels. Diese zu speichern ist notwendig, da, wenn sich die Farbe einer Fläche geändert hat und diese neu gezeichnet werden soll, das Kontextmenü eine für jede Fläche spezifische \codeinline{UserData} enthält. Diese ist notwendig, da alle Elemente dieses Kontextmenüs die Funktion \coderef{changeColor} aufrufen, und dir Information, welche Fläche geändert werden soll aus dieser \codeinline{UserData} bekommen.
+
+        \subsubsec{text\_error}{textError}
+          Dies ist der Text der erscheint, wenn man den Würfel versucht lösen zu lassen, aber nicht von jeder Farbe acht (mit der Mitte neun) Flächen hat.
+
+        \subsubsec{text\_solved}{textSolved}
+          Dies ist der grüne Text der erscheint, wenn der Würfel erfolgreich gelöst werden konnte.
+
+        \subsubsec{text\_not\_solvable}{textNotSolvable}
+          Dies ist der rote Text der erscheint, wenn der Würfel nicht erfolgreich gelöst werden konnte.
+
+        \subsubsec{button\_solve}{buttonSolve}
+          Dies ist der Knopf zum automatischen Lösen des Würfels. Er löst die Funktion \coderef{solveCube} aus.
+
+        \subsubsec{button\_next}{buttonNext}
+          Dies ist der Knopf um nach erfolgreichem Lösen des Würfels durch die Lösungsschritte vorwärts durchzugehen. Er löst die Funktion \coderef{nextStep} aus.
+
+        \subsubsec{button\_prev}{buttonPrev}
+        Dies ist der Knopf um nach erfolgreichem Lösen des Würfels durch die Lösungsschritte rückwärts durchzugehen. Er löst die Funktion \coderef{prevStep} aus.
+
+        \subsubsec{button\_group}{buttonGroup}
+          Dies ist die Gruppe der runden Knöpfe in der oberen linken Ecke des UI. Mit diesen kann man zwischen den Modi des Würfels wechseln. Entweder automatisches Lösen oder manuelles Drehen. Beide Knöpfe, die in dieser Gruppe liegen, sind komplemetär, aber lösen beide die Funktion \coderef{changeInputMethod} aus. Außerdem hat diese Gruppe eine \codeinline{UserData} von 0 oder 1, je nachdem welcher Knopf gedrückt ist.
+
+        \subsubsec{rotation\_buttons}{rotationButtons}
+          Dies ist ein \emph{Array}, welches die Knöpfe zur manuellen Rotation gespeicherrt hat. Der Index, den jeder dieser Knöpfe in diesem \emph{Array} hat, entspricht der Rotation die dieser auslösen soll. Im UI befinden sie sich am linken Rand und sind nur aktiv, wenn der manuelle Rotationsmodus aktiviert ist.
+
+        \subsubsec{turn\_list}{turnList}
+          Dies ist ein ein-Dimensionales \emph{Array}. Es speichert die Drehungs-Abfolge zum Lösen des Würfels und wird in \coderef{solveCube} mithilfe von \textbf{\nameref{generateSolution}} erzeugt.
+
+        \subsubsec{solve\_step}{solveStep}
+          Dies ist eine Ganzzahl, die auf den nächsten Schritt in \coderef{turnList} verweist. Dies kann dann von \coderef{nextStep} und \coderef{prevStep} genutzt werden.
+
+        \subsubsec{checkbox\_arrows}{checkboxArrows}
+          TODO
+
+        \subsubsec{possible\_colors}{possibleColors}
+          Dies ist ein zwei-Dimensionales \emph{Array}. Der erste Index (1--6) bestimmt die Farbe und der zweite Index (1--3) bestimmt welches Element des RGB-Farbcodes des Farbe ausgewählt wurde. Die Fabreihenfolge ist Weiß-Rot-Blau-Orange-Grün-Gelb.
+
+        \subsubsec{face\_color\_rgb}{faceColorRgb}
+          Dies ist ein drei-Dimensionales \emph{Array}. Der erste Index (1--6) bestimmt welche Seite des Würfels ausgewählt wird. Der zweite Index (1--8) bestimmt welche Fläche dieser Seite ausgewählt wird. Die Mitelfläche kann hierbei nicht angewählt werden, da diese ihre Farbe nie ändern muss. Der dritte Index bestimmt wie der Zweite der \coderef{possibleColors} welches Element des RGB-Farbcodes ausgewählt wird. Die Seitenreihenfolge ist gleich der Farbreihenfolge der \coderef{possibleColors}.
+
+        \subsubsec{rotaion\_button\_labels}{rotationButtonLabels}
+          Dies ist ein \emph{Array}. Hier sind die Bezeichnungen für die Rotationen gespeichert; in der selben Reihenfolge wie die Rotationen in \coderef{turn}. Die Bedeutung dieser wird in \autoref{rotationDescription} \emph{\nameref{rotationDescription}} beschrieben.
 
 
-      \subsec{get\_elon\_ui()}{elonUI}
 
-      \subsec{get\_azim\_ui()}{azimUI}
+      \subsec{Funktionen}{RCubeFunctions}
+      	\subsubsec{main()}{main}
+        	Hier wird zuerst die Figur erzeugt, in der anschließend gezeichnet wird. Die Optionen werden in der Form \codecustomref{figure(Option1, Wert1, Option2, Wert2, ...)}{figure} übergeben.
+        	\codeimport{53}{53}{RubiksCube}
+        	\begin{itemize}
+          	\item[\texttt{Name}] `Rubiks Cube' setzt den Namen der Figur
+          	\item[\texttt{NumberTitle}] `off' verhindert, dass MatLab dem Fenster eine nummerierte Überschrift gibt
+          	\item[\texttt{MenuBar}] `none' bedeutet, dass keine Menüzeile gezeichnet wird
+          	\item[\texttt{resize}] `off' verhindert dass Verändern der Größe des Fensters durch den User
+        	\end{itemize}
 
-      \subsec{generate\_patch\_and\_ui\_menu()}{generatePatches}
+        	Danach werden mit Hilfe von \coderef{elonUI} und \coderef{azimUI} den Variablen \coderef{elon} und \coderef{azim} ihre jeweiligen \emph{Slider} zugewiesen.
+
+        	Es folgen Aufrufe von \coderef{uiSetup} und \coderef{generatePatchAndUiMenu}, die die restlichen Elemente des UIs anlegen.
+
+      	\subsubsec{ui\_setup()}{uiSetup}
+        	Hier werden zunächst mit Hilfe von \coderef{patch} die Elemente des UIs erzeugt und, wenn diese später noch verändert werden müssen, globalen Variablen zugewiesen.
+
+        	Speziell hervorgehoben seien hierbei die \coderef{rotationButtons}
+        	\codeimport{75}{77}{RubiksCube}
+        	Jede der zwölf Rotationen wird eine Zahl von eins bis zwölf zugeordnet (siehe \autoref{rotationDescription} \emph{\nameref{rotationDescription}}). Das heißt, dass jeder Knopf eine dieser Rotationen auslösen soll. Um dies zu erreichen, erhält jeder Knopf bei seiner Erstellung eine\codeinline{'UserData'} entsprechend seiner Position in \coderef{rotationButtons}. Standardmäßig sind diese deaktiviert, da der Würfel im automatischen Lösungsmodus ist. Die für den User sichbare Bezeichnung wird aus \coderef{rotationButtonLabels} bezogen.
+
+        	Am Ende werden noch ein paar Veränderungen an der \codecustomref{figure}{figure} vorgenommen.
+        	\codeimport{78}{79}{RubiksCube}
+          Da keine weitere Figur erzeugt wurde/wird kann darauf verzichet werden, dass genauer spezifiziert wird, auf welche Figur diese Änderungen angewendet werdet sollen. Diese sorgen dafür, dass die Achsen des Koordinatensystems nicht zu sehen sind, sowie, dass der Würfel nicht verzerrt ist.
+
+        	Im Anschluss werden noch \coderef{rotateView} und \coderef{generateCenterpieces} aufgerufen.
+
+      	\subsubsec{manual\_turn()}{manualTurn}
+        	\codeimport{107}{109}{RubiksCube}
+        	Jede \emph{Callback}-Funktion hat zwei Parameter: \codeinline{source} und \codeinline{parent} (in dieser Reihenfolge). Die Tilde \codeinline{(~)} teilt dem \emph{Compiler} mit, dass dieser Parameter nicht benötigt wird (in diesem Fall der \codeinline{parent}). Die \codeinline{source} verweist auf das \emph{Objekt}, von dem der \emph{Callback} ausgelöst wurde. Da jedes Element der \coderef{rotationButtons} in seiner \codeinline{'UserData'} die Position im \emph{Array} (welche gleichzeiting die  zugehörige Rotation ist) gespeichert hat, kann dies hier genutzt werden, um an die Funktion \coderef{turn} übergeben zu werden. Auf diesen Wert wird mithlife von \codeinline{.} zugegriffen.\\
+
+      	\subsubsec{set\_elon\_ui()}{elonUI}
+          Erzeugt und setzt \coderef{elon} als ein \coderef{uicontrol}-Element.
+
+      	\subsubsec{set\_azim\_ui()}{azimUI}
+          Erzeugt und setzt \coderef{azim} als ein \coderef{uicontrol}-Element.
+
+      	\subsubsec{generate\_patch\_and\_ui\_menu()}{generatePatchAndUiMenu}
+          \codeimport{132}{139}{RubiksCube}
+          Erzeugt alle Elemente von \coderef{cmenu} in zwei \codeinline{for}-Schleifen mithilfe von \\\coderef{generateSingleUiMenu}. Anschließend wird \coderef{updatePatches} aufgerufen.\\
+
+        \subsubsec{generate\_single\_ui\_menu()}{generateSingleUiMenu}
+          Zuerst wird ein \coderef{uicontextmenu} erzeugt und in \codeinline{oneCmenu} gespeichert. Dieses wird dann genutzt, um acht Kontetmenüeinträge zu erzeugen und diesem Kontextmenü unterzuordnen. Jedes davon ruft die Funktion \coderef{changeColor} auf und hat eine \codeinline{UserData} entsprechend den Koordinaten der jeweiligen Fläche.
+
+        \subsubsec{update\_patches()}{updatePatches}
+          Diese Funktion ruft mithilfe von zwei \codeinline{for}-Schleifen \coderef{updateSinglePatch} für jede Fläche des Würfels ein Mal auf.
+
+        \subsubsec{update\_single\_patch()}{updateSinglePatch}
+          Diese Funktion erzeugt mithlife von \coderef{patch}, \coderef{cmenu} und den jeweiligen Koordinaten als Parameter die jeweilige Fläche des Würfels. Jede Fläche erhält ihr eigenes Kontextmenü mit einer speziellen \codeinline{UserData} (siehe \coderef{cmenu}).
+
+      	\subsubsec{turn()}{turn}
+          Der einzige Parameter der Funktion ist \codeinline{dir}, eine Ganzzahl von eins bis zwölf. Da der User keine Kontrolle über diese Funktion hat, haben wir auf eine Überprüfung des Parameters verzichtet.
+        	Zuerst werden die \coderef{rotationButtons} deaktiviert, um zu vermeiden, dass, während die Funktion eventuell noch ausgeführt wird, ein erneutes Auslösen möglich ist.
+
+        	Dann, wenn der Wert von \coderef{checkboxArrows} wahr ist, werden zwei Pfeile gezeichnet und in \codeinline{turn_arrows} gespeichert. Die Positionen der Ecken werden aus \coderef{arrowPositions} bezogen. Anschließend wird eine Sekunde gewartet.
+
+          Danach wird je nach dem Wert von \codeinline{dir} die entsprechende Funktion zum frehen des Würfels aufgerufen. Es folgt die Aktualisierung von \coderef{faceColorRgb} mithilfe von \coderef{updatePatches}.
+          \codeimport{188}{194}{RubiksCube}
+          Sollten die Hilfspfeile erzeugt worden sein, werden sie durch \coderef{hideArrows} unsichtbar gemacht.
+
+          Wenn die \codeinline{UserData} der \coderef{buttonGroup} einen Wert von 1 hat, also der Würfel also im manuellen Rotationsmodus ist, werden die \coderef{rotationButtons} wieder aktiviert.
+
+          Zum Schluss wird \codeinline{refresh} ausgeführt und damit das UI aktualisiert.
+
+      	\subsubsec{rotate\_view()}{rotateView}
+          Diese Funktion nutzt \coderef{view}, um den Blickpunkt der Figur zu ändern. Hierzu werden \coderef{elon} und \coderef{azim} benötigt.
+
+      	\subsubsec{generate\_centerpieces()}{generateCenterpieces}
+          Diese Funktion erzeugt mit \coderef{patch} die Mitten jeder Seite des Würfels. Da sich diese nicht ändern, wird die Funktion nur ein Mal aufgerufen. Außerdem haben diese Flächen nicht die Möglichkeit ihre Farbe zu ändern, da für diese kein Kontextmenü erzeugt wurde. Im Rest des Programms sind diese Flächen unwichtig und werden ignoriert.
+
+        \subsubsec{change\_color()}{changeColor}
+          Diese Funktion ist das \emph{Callback} der Kontextmenüelemente der Flächen.
+
+        \subsubsec{solve\_cube()}{solveCube}
+
+        \subsubsec{next\_step()}{nextStep}
+
+        \subsubsec{prev\_step()}{prevStep}
+
+        \subsubsec{change\_input\_method()}{changeInputMethod}
 
 
 \clearpage
-    \sec{generate\_solution.m}{solveCube}
+    \sec{generate\_solution.m}{generateSolution}
+      \subsec{Beschreibung der Rotationen}{rotationDescription}
+
+
       \Large{TODO}
 
 
-  \chap{besondere MatLab Funktionen}{functions}
+  \chap{besondere MatLab Funktionen}{matlabFunctions}
     \sec{figure()}{figure}
     \sec{patch()}{patch}
+    \sec{uicontrol()}{uicontrol}
+    \sec{uicontextmenu()}{uicontextmenu}
+    \sec{view()}{view}
 \end{document}
