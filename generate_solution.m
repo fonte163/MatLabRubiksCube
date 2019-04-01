@@ -6,7 +6,9 @@ face_colors = face_color_code;
 
 yellow_edge_everything();
 
-if (turns == -1) return; end
+if (turns == -1) 
+    return; 
+end
 
 refresh_face_colors();
 
@@ -14,7 +16,9 @@ refresh_face_colors();
 
 yellow_corner_position();
 
-if (turns == -1) return; end
+if (turns == -1) 
+    return; 
+end
 
 refresh_face_colors();
 
@@ -22,14 +26,18 @@ refresh_face_colors();
 
 yellow_corner_orientation();
 
-if (turns == -1) return; end
+if (turns == -1) 
+    return; 
+end
 
 refresh_face_colors();
 
 
 mid_edges();
 
-if (turns == -1) return; end
+if (turns == -1) 
+    return; 
+end
 
 refresh_face_colors();
 
@@ -37,7 +45,9 @@ refresh_face_colors();
 
 white_edge_orientation();
 
-if (turns == -1) return; end
+if (turns == -1)
+    return; 
+end
 
 refresh_face_colors();
 
@@ -45,7 +55,9 @@ refresh_face_colors();
 
 white_corner_orientation();
 
-if (turns == -1) return; end
+if (turns == -1) 
+    return; 
+end
 
 refresh_face_colors();
 
@@ -53,7 +65,9 @@ refresh_face_colors();
 
 white_corner_permutation();
 
-if (turns == -1) return; end
+if (turns == -1) 
+    return; 
+end
 
 refresh_face_colors();
 
@@ -61,10 +75,13 @@ refresh_face_colors();
 
 white_edge_permutation();
 
-if (turns == -1) return; end
+if (turns == -1) 
+    return; 
+end
 
 
 clean_up_output();
+
 
 
 
@@ -82,7 +99,6 @@ clean_up_output();
     end
 
     function return_error()
-        disp(turns);
         turns = -1;
     end
 
@@ -1232,6 +1248,7 @@ clean_up_output();
 
 
 
+
     function turn(dir)
         % R, R', U, U', L, L', D, D', F, F', B, B'
         switch dir
@@ -1340,7 +1357,7 @@ clean_up_output();
         face_colors(6, 7:8) = face_colors(2, 7:8);
         face_colors(2, 1) = buf1;
         face_colors(2, 7:8) = buf2;
-        for i = 1:2
+        for j = 1:2
             buf = face_colors(5,8);
             for i = 8:-1:2
                 face_colors(5,i) = face_colors(5,i-1);
@@ -1375,7 +1392,7 @@ clean_up_output();
         face_colors(5, 5:7) = face_colors(4, 5:7);
         face_colors(4, 5:7) = face_colors(3, 5:7);
         face_colors(3, 5:7) = buf;
-        for i = 1:2
+        for j = 1:2
             buf = face_colors(6,8);
             for i = 8:-1:2
                 face_colors(6,i) = face_colors(6,i-1);
@@ -1408,7 +1425,7 @@ clean_up_output();
         face_colors(6, 3) = face_colors(3, 1);
         face_colors(3, 1) = buf1;
         face_colors(3, 7:8) = buf2;
-        for i = 1:2
+        for j = 1:2
             buf = face_colors(2,8);
             for i = 8:-1:2
                 face_colors(2,i) = face_colors(2,i-1);
@@ -1443,7 +1460,7 @@ clean_up_output();
         face_colors(6,7) = face_colors(5,1);
         face_colors(5,7:8) = buf1;
         face_colors(5,1) = buf2;
-        for i = 1:2
+        for j = 1:2
             buf = face_colors(4,8);
             for i = 8:-1:2
                 face_colors(4,i) = face_colors(4,i-1);
