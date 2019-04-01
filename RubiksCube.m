@@ -28,7 +28,6 @@ global color_dialog_colors;
 global cube_presets;
 
 
-
 setup();
 main();
 
@@ -75,16 +74,15 @@ main();
     end
 
     function ui_setup()
-        menubar_color = uimenu('Text', 'Color scheme');
-        menubar_color_def = uimenu(menubar_color, 'Text', 'Default', 'Callback', @update_cube_color_def, 'Checked', 'on');
-        menubar_color_alt = uimenu(menubar_color, 'Text', 'Alternative', 'Callback', @update_cube_color_alt);
-        menubar_color_cus = uimenu(menubar_color, 'Text', 'Custom...', 'Callback', @update_cube_color_cus);
-
-        menubar_cube_presets = uimenu('Text', 'Cube presets');
+		menubar_color = uimenu('Label', '&Color scheme');
+		menubar_color_def = uimenu(menubar_color, 'Label', '&Default', 'Callback', @update_cube_color_def, 'Checked', 'on');
+		menubar_color_alt = uimenu(menubar_color, 'Label', '&Alternative', 'Callback', @update_cube_color_alt);
+		menubar_color_cus = uimenu(menubar_color, 'Label', 'C&ustom...', 'Callback', @update_cube_color_cus);
+		menubar_cube_presets = uimenu('Label', 'Cube &presets');
 
 
         load_presets();
-        uimenu(menubar_cube_presets, 'Text', '+ save new Preset', 'Callback', @add_preset);
+		uimenu(menubar_cube_presets, 'Label', '+ save &new Preset', 'Callback', @add_preset);
 
         text_help = uicontrol('Style', 'text', 'Position', [230 0 120 30], 'String', 'right-click to modify');
         uicontrol('Style', 'togglebutton', 'Position', [20 20 50 30], 'Callback', @rotate_button_callback, 'String', 'rotate');
@@ -117,12 +115,12 @@ main();
             return;
         end
         k = 1;
-        for hex = hexcell
-            hex = double(upper(hex));
+        for hexstr = hexcell
+            hex = double(upper(cell2mat(hexstr)));
             letters = hex > 64;
             hex(letters) = hex(letters) - 'A' + 10;
+            hex(~letters) = hex(~letters) - 48;
 
-            rgb(k, :) = zeros(3);
             for i = 1:3
                 rgb(k, i) = hex(i*2-1) * 16 + hex(i*2);
             end
@@ -158,10 +156,11 @@ main();
                             end
                         end
                         title = cell2mat(regexp(current_line, '(?<=\s).*', 'match'));
-                        if (isempty(title))
+						if (isempty(title))
                             title = '(empty)';
-                        end
-                        uimenu(menubar_cube_presets, 'Text', title, 'UserData', i, 'Callback', @open_preset);
+						end
+						
+						uimenu(menubar_cube_presets, 'Label', title, 'UserData', i, 'Callback', @open_preset);
                         i = i + 1;
                     end
                 end
@@ -187,7 +186,7 @@ main();
 
     function add_preset(source, ~)
         delete(source);
-        if (isfile('resources.txt'))
+        if (exist('resources.txt', 'file') == 2)
             content = '\r\n';
         else
             content = '                                          \r\n';
@@ -198,8 +197,8 @@ main();
             end
         end
         input = cell2mat(inputdlg('Name:'));
-        if (~isempty(input))
-            input = cell2mat(regexp(input, '[\w\s\(\)_\-]', 'match'));
+		if (~isempty(input))
+            input = cell2mat(regexp(input, '[\w\s\(\)-]', 'match'));
             content = [content ' ' input];
             fid = fopen('resources.txt', 'a');
             fprintf(fid, content);
@@ -207,11 +206,13 @@ main();
             data = size(cube_presets);
             data = data(1) + 1;
             cube_presets(data, :, :) = face_color(:, :);
-            uimenu(menubar_cube_presets, 'Text', input, 'Callback', @open_preset, 'UserData', data);
+			
+			uimenu(menubar_cube_presets, 'Label', input, 'Callback', @open_preset, 'UserData', data);
         else
             msgbox('Name can''t be empty.');
-        end
-        uimenu(menubar_cube_presets, 'Text', '+ save new preset', 'Callback', @add_preset);
+		end
+		
+		uimenu(menubar_cube_presets, 'Label', '+ save new preset', 'Callback', @add_preset);
     end
 
     function open_preset(source, ~)
@@ -257,11 +258,8 @@ main();
         pos(1) = pos(1) + (pos(3) - width) / 2;
         pos(2) = pos(2) + (pos(4) - height) / 2;
         pos(3:4) = [width height];
-        color_dialog = dialog('Position', pos, 'Name', 'CubeColorPicker');
+        color_dialog = dialog('Position', pos, 'Name', 'Cube Color Picker');
         color_custom_generate_ui();
-
-        uiwait(color_dialog);
-        refresh_cube();
     end
 
     function color_custom_generate_ui()
@@ -276,7 +274,7 @@ main();
         uicontrol('Parent', color_dialog, 'Style', 'text', 'String', 'Bottom', 'Position', [20 45 50 25], 'HorizontalAlignment', 'left');
 
         uicontrol('Parent', color_dialog, 'Style', 'pushbutton', 'Position', [10 10 50 25], 'Callback', 'delete(gcf);', 'String', 'Cancel');
-        uicontrol('Parent', color_dialog, 'Style', 'pushbutton', 'Position', [70 10 50 25], 'String', 'OK', 'Callback', @color_custom_ok_button_callback);
+        uicontrol('Parent', color_dialog, 'Style', 'pushbutton', 'Position', [70 10 50 25], 'String', 'Save', 'Callback', @color_custom_save_button_callback);
     end
 
     function color_custom_button_callback(source, ~)
@@ -285,8 +283,13 @@ main();
         color_dialog_colors(source.UserData, :) = new_color;
     end
 
-    function color_custom_ok_button_callback(~, ~)
+    function color_custom_save_button_callback(~, ~)
         fid = fopen('resources.txt', 'r+');
+		
+		if (fid == -1)
+			fid = fopen('resources.txt', 'w');
+		end
+		
         for i = 1:6
             rgb = color_dialog_colors(i,:).*255;
             fprintf(fid, strcat('#', reshape(sprintf('%02x',rgb.'),6,[]).'));
@@ -298,6 +301,7 @@ main();
         menubar_color_def.Checked = 'off';
         menubar_color_alt.Checked = 'off';
         menubar_color_cus.Checked = 'on';
+		refresh_cube();
     end
 
 
