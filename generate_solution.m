@@ -4,49 +4,61 @@ next_turn = 1;
 face_colors = face_color_code;
 
 
-yellow_edge_everything();
+[abort, success, turns] = f2l_recursive(face_colors, 1, [], 0);
+turns = flip(turns);
 
-if (turns == -1) 
-    return; 
+if (~success || abort)
+    
+    turns = [];
+    
+    yellow_edge_everything();
+    
+    if (turns == -1)
+        return;
+    end
+    
+    refresh_face_colors();
+    
+    
+    
+    yellow_corner_position();
+    
+    if (turns == -1)
+        return;
+    end
+    
+    refresh_face_colors();
+    
+    
+    
+    yellow_corner_orientation();
+    
+    if (turns == -1)
+        return;
+    end
+    
+    refresh_face_colors();
+    
+    
+    mid_edges();
+    
+    if (turns == -1)
+        return;
+    end
+    
+    
 end
 
 refresh_face_colors();
 
 
-
-yellow_corner_position();
-
-if (turns == -1) 
-    return; 
-end
-
-refresh_face_colors();
-
-
-
-yellow_corner_orientation();
-
-if (turns == -1) 
-    return; 
-end
-
-refresh_face_colors();
-
-
-mid_edges();
-
-if (turns == -1) 
-    return; 
-end
-
-refresh_face_colors();
 
 
 
 white_edge_orientation();
 
 if (turns == -1)
-    return; 
+    return;
 end
 
 refresh_face_colors();
@@ -55,8 +67,8 @@ refresh_face_colors();
 
 white_corner_orientation();
 
-if (turns == -1) 
-    return; 
+if (turns == -1)
+    return;
 end
 
 refresh_face_colors();
@@ -65,8 +77,8 @@ refresh_face_colors();
 
 white_corner_permutation();
 
-if (turns == -1) 
-    return; 
+if (turns == -1)
+    return;
 end
 
 refresh_face_colors();
@@ -75,8 +87,8 @@ refresh_face_colors();
 
 white_edge_permutation();
 
-if (turns == -1) 
-    return; 
+if (turns == -1)
+    return;
 end
 
 
@@ -1238,251 +1250,9 @@ clean_up_output();
     function refresh_face_colors()
         if (next_turn <= length(turns))
             for i = next_turn:1:length(turns)
-                turn(turns(i));
+                face_colors = turn(turns(i), face_colors);
             end
             next_turn = length(turns)+1;
-        end
-    end
-
-
-
-
-
-
-    function turn(dir)
-        % R, R', U, U', L, L', D, D', F, F', B, B'
-        switch dir
-            case 1
-                turn_r();
-            case 2
-                reverse_turn_r();
-            case 3
-                turn_u();
-            case 4
-                reverse_turn_u();
-            case 5
-                turn_l();
-            case 6
-                reverse_turn_l();
-            case 7
-                turn_d();
-            case 8
-                reverse_turn_d();
-            case 9
-                turn_f();
-            case 10
-                reverse_turn_f();
-            case 11
-                turn_b();
-            case 12
-                reverse_turn_b();
-        end
-    end
-
-    function turn_r()
-        buf1 = face_colors(1, 3);
-        buf2 = face_colors(1, 4);
-        buf3 = face_colors(1, 5);
-        face_colors(1, 3:5) = face_colors(2, 3:5);
-        face_colors(2, 3:5) = face_colors(6, 3:5);
-        face_colors(6, 3:4) = face_colors(4, 7:8);
-        face_colors(6, 5) = face_colors(4, 1);
-        face_colors(4, 7) = buf1;
-        face_colors(4, 8) = buf2;
-        face_colors(4, 1) = buf3;
-        for j = 1:2
-            buf = face_colors(3,8);
-            for i = 8:-1:2
-                face_colors(3,i) = face_colors(3,i-1);
-            end
-            face_colors(3,1) = buf;
-        end
-    end
-
-    function reverse_turn_r()
-        buf = face_colors(1, 3:5);
-        face_colors(1, 3:4) = face_colors(4, 7:8);
-        face_colors(1, 5) = face_colors(4, 1);
-        face_colors(4, 7:8) = face_colors(6, 3:4);
-        face_colors(4, 1) = face_colors(6, 5);
-        face_colors(6, 3:5) = face_colors(2, 3:5);
-        face_colors(2, 3:5) = buf;
-        for j = 1:2
-            buf = face_colors(3,1);
-            for i = 1:7
-                face_colors(3,i) = face_colors(3,i+1);
-            end
-            face_colors(3,8) = buf;
-        end
-    end
-
-    function turn_u()
-        buf = face_colors(2, 1:3);
-        for i = 2:4
-            face_colors(i, 1:3) = face_colors(i+1, 1:3);
-        end
-        face_colors(5, 1:3) = buf;
-        for a = 1:2
-            buf = face_colors(1,8);
-            for i = 8:-1:2
-                face_colors(1,i) = face_colors(1,i-1);
-            end
-            face_colors(1,1) = buf;
-        end
-    end
-
-    function reverse_turn_u()
-        buf = face_colors(5, 1:3);
-        for i = 5:-1:3
-            face_colors(i, 1:3) = face_colors(i-1, 1:3);
-        end
-        face_colors(2, 1:3) = buf;
-        for j = 1:2
-            buf = face_colors(1,1);
-            for i = 1:7
-                face_colors(1,i) = face_colors(1,i+1);
-            end
-            face_colors(1,8) = buf;
-        end
-    end
-
-    function turn_l()
-        buf1 = face_colors(1, 1);
-        buf2 = face_colors(1, 7:8);
-        face_colors(1, 1) = face_colors(4, 5);
-        face_colors(1, 7:8) = face_colors(4, 3:4);
-        face_colors(4, 5) = face_colors(6, 1);
-        face_colors(4, 3:4) = face_colors(6, 7:8);
-        face_colors(6, 1) = face_colors(2, 1);
-        face_colors(6, 7:8) = face_colors(2, 7:8);
-        face_colors(2, 1) = buf1;
-        face_colors(2, 7:8) = buf2;
-        for j = 1:2
-            buf = face_colors(5,8);
-            for i = 8:-1:2
-                face_colors(5,i) = face_colors(5,i-1);
-            end
-            face_colors(5,1) = buf;
-        end
-    end
-
-    function reverse_turn_l()
-        buf1 = face_colors(1, 1);
-        buf2 = face_colors(1, 7:8);
-        face_colors(1, 1) = face_colors(2, 1);
-        face_colors(1, 7:8) = face_colors(2, 7:8);
-        face_colors(2, 1) = face_colors(6, 1);
-        face_colors(2, 7:8) = face_colors(6, 7:8);
-        face_colors(6, 1) = face_colors(4, 5);
-        face_colors(6, 7:8) = face_colors(4, 3:4);
-        face_colors(4, 5) = buf1;
-        face_colors(4, 3:4) = buf2;
-        for j = 1:2
-            buf = face_colors(5,1);
-            for i = 1:7
-                face_colors(5,i) = face_colors(5,i+1);
-            end
-            face_colors(5,8) = buf;
-        end
-    end
-
-    function turn_d()
-        buf = face_colors(2, 5:7);
-        face_colors(2, 5:7) = face_colors(5, 5:7);
-        face_colors(5, 5:7) = face_colors(4, 5:7);
-        face_colors(4, 5:7) = face_colors(3, 5:7);
-        face_colors(3, 5:7) = buf;
-        for j = 1:2
-            buf = face_colors(6,8);
-            for i = 8:-1:2
-                face_colors(6,i) = face_colors(6,i-1);
-            end
-            face_colors(6,1) = buf;
-        end
-    end
-
-    function reverse_turn_d()
-        buf = face_colors(2, 5:7);
-        face_colors(2, 5:7) = face_colors(3, 5:7);
-        face_colors(3, 5:7) = face_colors(4, 5:7);
-        face_colors(4, 5:7) = face_colors(5, 5:7);
-        face_colors(5, 5:7) = buf;
-        for j = 1:2
-            buf = face_colors(6,1);
-            for i = 1:7
-                face_colors(6,i) = face_colors(6,i+1);
-            end
-            face_colors(6,8) = buf;
-        end
-    end
-
-    function turn_f()
-        buf1 = face_colors(1, 7);
-        buf2 = face_colors(1, 5:6);
-        face_colors(1, 5:7) = face_colors(5, 3:5);
-        face_colors(5, 3:5) = face_colors(6, 1:3);
-        face_colors(6, 1:2) = face_colors(3, 7:8);
-        face_colors(6, 3) = face_colors(3, 1);
-        face_colors(3, 1) = buf1;
-        face_colors(3, 7:8) = buf2;
-        for j = 1:2
-            buf = face_colors(2,8);
-            for i = 8:-1:2
-                face_colors(2,i) = face_colors(2,i-1);
-            end
-            face_colors(2,1) = buf;
-        end
-    end
-
-    function reverse_turn_f()
-        buf = face_colors(1, 5:7);
-        face_colors(1, 7) = face_colors(3, 1);
-        face_colors(1, 5:6) = face_colors(3, 7:8);
-        face_colors(3, 1) = face_colors(6,3);
-        face_colors(3,7:8) = face_colors(6,1:2);
-        face_colors(6,1:3) = face_colors(5,3:5);
-        face_colors(5,3:5) = buf;
-        for j = 1:2
-            buf = face_colors(2,1);
-            for i = 1:7
-                face_colors(2,i) = face_colors(2,i+1);
-            end
-            face_colors(2,8) = buf;
-        end
-    end
-
-    function turn_b()
-        buf1 = face_colors(1,1:2);
-        buf2 = face_colors(1,3);
-        face_colors(1,1:3) = face_colors(3,3:5);
-        face_colors(3,3:5) = face_colors(6,5:7);
-        face_colors(6,5:6) = face_colors(5,7:8);
-        face_colors(6,7) = face_colors(5,1);
-        face_colors(5,7:8) = buf1;
-        face_colors(5,1) = buf2;
-        for j = 1:2
-            buf = face_colors(4,8);
-            for i = 8:-1:2
-                face_colors(4,i) = face_colors(4,i-1);
-            end
-            face_colors(4,1) = buf;
-        end
-    end
-
-    function reverse_turn_b()
-        buf = face_colors(1,1:3);
-        face_colors(1,3) = face_colors(5,1);
-        face_colors(1,1:2) = face_colors(5,7:8);
-        face_colors(5,1) = face_colors(6,7);
-        face_colors(5,7:8) = face_colors(6,5:6);
-        face_colors(6,5:7) = face_colors(3,3:5);
-        face_colors(3,3:5) = buf;
-        for j = 1:2
-            buf = face_colors(4,1);
-            for i = 1:7
-                face_colors(4,i) = face_colors(4,i+1);
-            end
-            face_colors(4,8) = buf;
         end
     end
 end

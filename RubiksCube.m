@@ -27,13 +27,13 @@ global color_dialog;
 global color_dialog_colors;
 global cube_presets;
 
-
 setup();
 main();
 
 
 
     function setup()
+		
         possible_colors = [[1,1,1]; [1,0,0]; [0,0,1]; [1,0.6,0]; [0,1,0]; [1,1,0]];
 
         face_positions = [[[0,1,1,0], [3,3,2,2], [3,3,3,3]],  [[1,2,2,1], [3,3,2,2], [3,3,3,3]], [[2,3,3,2],[3,3,2,2],[3,3,3,3]], [[2,3,3,2],[2,2,1,1],[3,3,3,3]], [[2,3,3,2],[1,1,0,0],[3,3,3,3]], [[1,2,2,1],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[2,2,1,1],[3,3,3,3]]; % white
@@ -79,6 +79,7 @@ main();
 		menubar_color_alt = uimenu(menubar_color, 'Label', '&Alternative', 'Callback', @update_cube_color_alt);
 		menubar_color_cus = uimenu(menubar_color, 'Label', 'C&ustom...', 'Callback', @update_cube_color_cus);
 		menubar_cube_presets = uimenu('Label', 'Cube &presets');
+		
 
 
         load_presets();
@@ -131,15 +132,21 @@ main();
     function load_presets()
         fid = fopen('resources.txt');
         if (fid ~= -1)
-            color_dialog_colors = hex2rgb(regexp(fgetl(fid), '[0-9a-fA-F]{6}', 'match'))./255;
+            first_line = fgetl(fid);
+            color_dialog_colors = hex2rgb(regexp(first_line, '[0-9a-fA-F]{6}', 'match'))./255;
             if (length(color_dialog_colors) ~= 6)
                 color_dialog_colors = possible_colors;
                 msgbox('Couldn''t load color definitions from resource.txt');
             end
+            
 
             error_list = [];
             i = 1;
             j = 2;
+            if (length(first_line) >= 49)
+                frewind(fid);
+                j = 1;
+            end
             while (~feof(fid))
                 current_line = fgetl(fid);
                 color_codes = regexp(current_line, '[1-6]+(?=\s)', 'match');
@@ -186,11 +193,7 @@ main();
 
     function add_preset(source, ~)
         delete(source);
-        if (exist('resources.txt', 'file') == 2)
-            content = '\r\n';
-        else
-            content = '                                          \r\n';
-        end
+        content = '\r\n';
         for i = 1:6
             for j = 1:8
                 content = [content num2str(face_color(i,j))];
@@ -285,16 +288,27 @@ main();
 
     function color_custom_save_button_callback(~, ~)
         fid = fopen('resources.txt', 'r+');
-		
 		if (fid == -1)
 			fid = fopen('resources.txt', 'w');
-		end
-		
+        end
+        
+        first_line = fgets(fid);
+        rest = '';
+        if (first_line(1) ~= '#' || length(first_line) <= 42)
+            if (length(first_line) >= 49)
+                rest = first_line;
+            end
+            while (~feof(fid))
+                rest = [rest fgets(fid)];
+            end
+        end
+        
+		frewind(fid);
         for i = 1:6
             rgb = color_dialog_colors(i,:).*255;
             fprintf(fid, strcat('#', reshape(sprintf('%02x',rgb.'),6,[]).'));
         end
-        fprintf(fid, '\r\n');
+        fprintf(fid, ['\r\n' rest]);
         fclose(fid);
         possible_colors = color_dialog_colors;
         delete(gcf);
@@ -356,7 +370,7 @@ main();
     end
 
     function manual_turn(source,~)
-        turn(source.UserData);
+        turn_this(source.UserData);
     end
 
     function rotate_view(~, ~)
@@ -415,49 +429,22 @@ main();
 
 
 
-
-
-    function turn(dir)
-        % R, R', U, U', L, L', D, D', F, F', B, B'
+    function turn_this(dir)
         for i = 1:12
             set(rotation_buttons(i), 'Enable', 'off');
         end
+        turn_arrows = [];
         if (checkbox_arrows.Value)
             for i = 0:3
                 turn_arrows(i+1) = patch(arrow_positions(dir, (1+9*i):(3+9*i)), arrow_positions(dir, (4+9*i):(6+9*i)), arrow_positions(dir, (7+9*i):(9+9*i)), [0.5 0.1 0.5]);
             end
             pause(1);
         end
-        switch dir
-            case 1
-                turn_r();
-            case 2
-                reverse_turn_r();
-            case 3
-                turn_u();
-            case 4
-                reverse_turn_u();
-            case 5
-                turn_l();
-            case 6
-                reverse_turn_l();
-            case 7
-                turn_d();
-            case 8
-                reverse_turn_d();
-            case 9
-                turn_f();
-            case 10
-                reverse_turn_f();
-            case 11
-                turn_b();
-            case 12
-                reverse_turn_b();
-        end
+        
+        face_color = turn(dir, face_color);
+        
         update_patches();
-        if (checkbox_arrows.Value)
-            hide_arrows(turn_arrows);
-        end
+        hide_arrows(turn_arrows);
         if (button_group.UserData == 1)
             for i = 1:12
                 set(rotation_buttons(i), 'Enable', 'on');
@@ -465,215 +452,6 @@ main();
         end
         refresh;
     end
-
-    function turn_r()
-        buf1 = face_color(1, 3);
-        buf2 = face_color(1, 4);
-        buf3 = face_color(1, 5);
-        face_color(1, 3:5) = face_color(2, 3:5);
-        face_color(2, 3:5) = face_color(6, 3:5);
-        face_color(6, 3:4) = face_color(4, 7:8);
-        face_color(6, 5) = face_color(4, 1);
-        face_color(4, 7) = buf1;
-        face_color(4, 8) = buf2;
-        face_color(4, 1) = buf3;
-        for j = 1:2
-            buf = face_color(3,8);
-            for i = 8:-1:2
-                face_color(3,i) = face_color(3,i-1);
-            end
-            face_color(3,1) = buf;
-        end
-    end
-
-    function reverse_turn_r()
-        buf = face_color(1, 3:5);
-        face_color(1, 3:4) = face_color(4, 7:8);
-        face_color(1, 5) = face_color(4, 1);
-        face_color(4, 7:8) = face_color(6, 3:4);
-        face_color(4, 1) = face_color(6, 5);
-        face_color(6, 3:5) = face_color(2, 3:5);
-        face_color(2, 3:5) = buf;
-        for j = 1:2
-            buf = face_color(3,1);
-            for i = 1:7
-                face_color(3,i) = face_color(3,i+1);
-            end
-            face_color(3,8) = buf;
-        end
-    end
-
-    function turn_u()
-        buf = face_color(2, 1:3);
-        for i = 2:4
-            face_color(i, 1:3) = face_color(i+1, 1:3);
-        end
-        face_color(5, 1:3) = buf;
-        for j = 1:2
-            buf = face_color(1,8);
-            for i = 8:-1:2
-                face_color(1,i) = face_color(1,i-1);
-            end
-            face_color(1,1) = buf;
-        end
-    end
-
-    function reverse_turn_u()
-        buf = face_color(5, 1:3);
-        for i = 5:-1:3
-            face_color(i, 1:3) = face_color(i-1, 1:3);
-        end
-        face_color(2, 1:3) = buf;
-        for j = 1:2
-            buf = face_color(1,1);
-            for i = 1:7
-                face_color(1,i) = face_color(1,i+1);
-            end
-            face_color(1,8) = buf;
-        end
-    end
-
-    function turn_l()
-        buf1 = face_color(1, 1);
-        buf2 = face_color(1, 7:8);
-        face_color(1, 1) = face_color(4, 5);
-        face_color(1, 7:8) = face_color(4, 3:4);
-        face_color(4, 5) = face_color(6, 1);
-        face_color(4, 3:4) = face_color(6, 7:8);
-        face_color(6, 1) = face_color(2, 1);
-        face_color(6, 7:8) = face_color(2, 7:8);
-        face_color(2, 1) = buf1;
-        face_color(2, 7:8) = buf2;
-        for j = 1:2
-            buf = face_color(5,8);
-            for i = 8:-1:2
-                face_color(5,i) = face_color(5,i-1);
-            end
-            face_color(5,1) = buf;
-        end
-    end
-
-    function reverse_turn_l()
-        buf1 = face_color(1, 1);
-        buf2 = face_color(1, 7:8);
-        face_color(1, 1) = face_color(2, 1);
-        face_color(1, 7:8) = face_color(2, 7:8);
-        face_color(2, 1) = face_color(6, 1);
-        face_color(2, 7:8) = face_color(6, 7:8);
-        face_color(6, 1) = face_color(4, 5);
-        face_color(6, 7:8) = face_color(4, 3:4);
-        face_color(4, 5) = buf1;
-        face_color(4, 3:4) = buf2;
-        for j = 1:2
-            buf = face_color(5,1);
-            for i = 1:7
-                face_color(5,i) = face_color(5,i+1);
-            end
-            face_color(5,8) = buf;
-        end
-    end
-
-    function turn_d()
-        buf = face_color(2, 5:7);
-        face_color(2, 5:7) = face_color(5, 5:7);
-        face_color(5, 5:7) = face_color(4, 5:7);
-        face_color(4, 5:7) = face_color(3, 5:7);
-        face_color(3, 5:7) = buf;
-        for j = 1:2
-            buf = face_color(6,8);
-            for i = 8:-1:2
-                face_color(6,i) = face_color(6,i-1);
-            end
-            face_color(6,1) = buf;
-        end
-    end
-
-    function reverse_turn_d()
-        buf = face_color(2, 5:7);
-        face_color(2, 5:7) = face_color(3, 5:7);
-        face_color(3, 5:7) = face_color(4, 5:7);
-        face_color(4, 5:7) = face_color(5, 5:7);
-        face_color(5, 5:7) = buf;
-        for j = 1:2
-            buf = face_color(6,1);
-            for i = 1:7
-                face_color(6,i) = face_color(6,i+1);
-            end
-            face_color(6,8) = buf;
-        end
-    end
-
-    function turn_f()
-        buf1 = face_color(1, 7);
-        buf2 = face_color(1, 5:6);
-        face_color(1, 5:7) = face_color(5, 3:5);
-        face_color(5, 3:5) = face_color(6, 1:3);
-        face_color(6, 1:2) = face_color(3, 7:8);
-        face_color(6, 3) = face_color(3, 1);
-        face_color(3, 1) = buf1;
-        face_color(3, 7:8) = buf2;
-        for j = 1:2
-            buf = face_color(2,8);
-            for i = 8:-1:2
-                face_color(2,i) = face_color(2,i-1);
-            end
-            face_color(2,1) = buf;
-        end
-    end
-
-    function reverse_turn_f()
-        buf = face_color(1, 5:7);
-        face_color(1, 7) = face_color(3, 1);
-        face_color(1, 5:6) = face_color(3, 7:8);
-        face_color(3, 1) = face_color(6,3);
-        face_color(3,7:8) = face_color(6,1:2);
-        face_color(6,1:3) = face_color(5,3:5);
-        face_color(5,3:5) = buf;
-        for j = 1:2
-            buf = face_color(2,1);
-            for i = 1:7
-                face_color(2,i) = face_color(2,i+1);
-            end
-            face_color(2,8) = buf;
-        end
-    end
-
-	function turn_b()
-        buf1 = face_color(1,1:2);
-        buf2 = face_color(1,3);
-        face_color(1,1:3) = face_color(3,3:5);
-        face_color(3,3:5) = face_color(6,5:7);
-        face_color(6,5:6) = face_color(5,7:8);
-        face_color(6,7) = face_color(5,1);
-        face_color(5,7:8) = buf1;
-        face_color(5,1) = buf2;
-        for j = 1:2
-            buf = face_color(4,8);
-            for i = 8:-1:2
-                face_color(4,i) = face_color(4,i-1);
-            end
-            face_color(4,1) = buf;
-        end
-    end
-
-    function reverse_turn_b()
-        buf = face_color(1,1:3);
-        face_color(1,3) = face_color(5,1);
-        face_color(1,1:2) = face_color(5,7:8);
-        face_color(5,1) = face_color(6,7);
-        face_color(5,7:8) = face_color(6,5:6);
-        face_color(6,5:7) = face_color(3,3:5);
-        face_color(3,3:5) = buf;
-        for j = 1:2
-            buf = face_color(4,1);
-            for i = 1:7
-                face_color(4,i) = face_color(4,i+1);
-            end
-            face_color(4,8) = buf;
-        end
-    end
-
-
 
 
     function update_patches()
@@ -690,12 +468,13 @@ main();
 
     function hide_arrows(arrows)
         for i = 0:length(arrows)-1
-            arrows(i+1).Visible = 'Off';
+            set(arrows(i+1), 'Visible', 'Off');
         end
     end
 
     function solve_cube(~, ~)
         button_solve.Enable = 'off';
+		button_solve.String = '...';
 
         vals = tabulate(face_color(:));
         vals2(1:6) = vals(:, 2);
@@ -725,13 +504,14 @@ main();
             end
         end
         button_solve.Enable = 'on';
+		button_solve.String = 'solve';
     end
 
 
     function next_step(~, ~)
         button_next.Enable = 'off';
         button_prev.Enable = 'off';
-        turn(turn_list(solve_step));
+        turn_this(turn_list(solve_step));
         button_prev.Enable = 'on';
         solve_step = solve_step + 1;
         if ~(solve_step > length(turn_list))
@@ -742,7 +522,7 @@ main();
     function prev_step(~, ~)
         button_next.Enable = 'off';
         button_prev.Enable = 'off';
-        turn(get_reverse_turn(turn_list(solve_step - 1)));
+        turn_this(get_reverse_turn(turn_list(solve_step - 1)));
         button_next.Enable = 'on';
         solve_step = solve_step - 1;
         if (solve_step ~= 1)
