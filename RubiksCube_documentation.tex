@@ -10,6 +10,7 @@
 \usepackage{listings}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{hyperref}
+\usepackage{lstautogobble}
 
 \usepackage[headsepline]{scrlayer-scrpage}
 \pagestyle{scrheadings}
@@ -52,7 +53,8 @@
     stepnumber=1,
     numberstyle=\color{Gray},
     keywordstyle=\color{Blue},
-    commentstyle=\color{ForestGreen}
+    commentstyle=\color{ForestGreen},
+    autogobble=true
 }
 
 \newcommand{\codeimport}[4][0]{
@@ -129,6 +131,7 @@
       \subsec{Funktionen}{funktionen}
 
         \subsubsec{load\_presets()}{loadpresets}
+          \codeimport[2]{70}{70}{RubiksCube.m}
 
     \sec{turn.m}{turn}
 
