@@ -10,6 +10,7 @@
 \usepackage{listings}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{hyperref}
+\usepackage{lstautogobble}
 
 \usepackage[headsepline]{scrlayer-scrpage}
 \pagestyle{scrheadings}
@@ -48,15 +49,16 @@
     showstringspaces=false,
     flexiblecolumns=true,
     numbers=left,
-    numbersep=.5em,
+    numbersep=8pt,
     stepnumber=1,
     numberstyle=\color{Gray},
     keywordstyle=\color{Blue},
-    commentstyle=\color{ForestGreen}
+    commentstyle=\color{ForestGreen},
+    autogobble=true
 }
 
-\newcommand{\codeimport}[4][]{
-  \lstinputlisting[firstnumber=#2, linerange={#2-#3}#1]{#4}
+\newcommand{\codeimport}[4][0]{
+  \lstinputlisting[firstnumber=#2,tabsize=4,framexleftmargin=\the\dimexpr -18pt * #1\relax,numbersep=\the\dimexpr \the\dimexpr -18pt * #1\relax + 8pt\relax,xleftmargin=\the\dimexpr -18pt * #1\relax, linerange={#2-#3}]{#4}
 }
 
 \newcommand{\coderef}[1]{
@@ -129,6 +131,7 @@
       \subsec{Funktionen}{funktionen}
 
         \subsubsec{load\_presets()}{loadpresets}
+          \codeimport[2]{70}{70}{RubiksCube.m}
 
     \sec{turn.m}{turn}
 
