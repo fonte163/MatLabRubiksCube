@@ -374,7 +374,7 @@ main();
         turn_this(source.UserData);
     end
 
-    function rotate_view(~, ~)
+    function rotate_view()
         view([325 25]);
     end
 

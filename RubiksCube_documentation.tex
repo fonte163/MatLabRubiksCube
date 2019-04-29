@@ -144,9 +144,13 @@
           Diese Funktion wandelt ein cell-Array in ein Array von RGB-Farben um. Da RGB-Farben aus drei Komponenten bestehen, ist der Rückgabewert dieser Funktion ein zweidimensionales Array, bei dem man mit dem ersten Parameter die Farbe wählt und mit dem Zweiten auf die jeweiligen RGB-Komponenten zugreifen kann.
 
         \subsubsec{ui\_setup()}{uisetup}
-          In dieser Funktion werden mithilfe von \coderef{uimenu} die Menüleiste angelegt und mit \coderef{uicontrol} die Elemente auf dem UI erzeugt. Außerdem werden die Achsen der Figur sowohl \codeinline{off} als auch \codeinline{equal} gesetzt, und \coderef{generatecenterpieces} aufgerufen.
+          In dieser Funktion werden mithilfe von \coderef{uimenu} die Menüleiste angelegt und mit \coderef{uicontrol} die Elemente auf dem UI erzeugt. Außerdem werden die Achsen der Figur sowohl \codeinline{off} als auch \codeinline{equal} gesetzt und \coderef{generatecenterpieces}, \coderef{rotateview}, sowie \coderef{loadpresets} aufgerufen.
+
+        \subsubsec{rotate\_view}{rotateview}
+          Diese Funktion rotiert die Figur in die Ausgangsposition mithilfe von: \codeimport[1]{377}{379}{RubiksCube.m}
 
         \subsubsec{generate\_centerpieces()}{generatecenterpieces}
+          Mit \coderef{patch} werden die Mitten der Seiten erzeugt. Da diese durch die Drehungen nicht verändert werden können, sind diese nicht in \coderef{facecolors} enthalten.
 
         \subsubsec{solve\_cube()}{solvecube}
 
@@ -171,6 +175,8 @@
 
   \chap{Besondere MatLab-Funktionen}{matlab}
     \sec{figure()}{figure}
+
+    \sec{patch()}{patch}
 
     \sec{uicontrol()}{uicontrol}
 
