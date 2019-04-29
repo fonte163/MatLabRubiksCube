@@ -122,15 +122,36 @@
   \maketitle
 
   \chap{Aufbau des Programms}{aufbau}
-
     \sec{RubiksCube.m}{rubikscube}
       \subsec{Variablen}{variablen}
+        \subsubsec{face\_colors}{facecolors}
+          Dies ist ein zweidimensionales Array, dass die Farben der einzelnen Flächen des Würfels speichert. Dabei entsprechen die Zahlen 1--6 den Seiten des Würfels, deren Farbe die Flächen haben. Die erste Koordinate ist die Seiten- und die Zweite die Flächennummer auf der jeweiligen Seite. \codeinline{face_colors(3,5)} wäre dementsprechend Fläche 5 auf Seite 3 (blau, unten rechts).
+          \begin{figure}[!h]
+            \centering
+            \includegraphics[width=0.5\columnwidth]{cubeMapCropped}
+            \caption{Position der Flächen in \coderef{facecolors}}
+          \end{figure}\newline
+          Die Mittelflächen müssen hierbei nicht beachtet werden, da man ihre Position nicht durch Drehungen verändern kann. (siehe \autoref{grundlagen} \nameref{grundlagen})
 
       \subsec{Funktionen}{funktionen}
-
         \subsubsec{load\_presets()}{loadpresets}
+          Diese Funktion interagiert mit der Datei \coderef{resources} und lädt sowohl die Farbdefinitionen für die Custom-Farbe, als auch die Presets in die Variablen \codeinline{color_dialog_colors} beziehungsweise \codeinline{cube_presets}. Die Datei wird mithlife der Funktion \codeinline{fgetl()} zeilenweise ohne newline-Zeichen ausgelesen. Dann werden mithlife von \codeinline{regexp()} die entsprechenden Teile extrahiert.
+
+          Im folgenden Beispiel wird die erste Zeile zu Beginn in ein cell-Array  aus je sechs hex-Zeichen aufgeteilt und dann mithilfe von \coderef{hex2rgb} in ein Array von RGB-Farben umgewandelt.
+          \codeimport[3]{136}{137}{RubiksCube.m}
+
+        \subsubsec{hex2rgb()}{hex2rgb}
+          Diese Funktion wandelt ein cell-Array in ein Array von RGB-Farben um. Da RGB-Farben aus drei Komponenten bestehen, ist der Rückgabewert dieser Funktion ein zweidimensionales Array, bei dem man mit dem ersten Parameter die Farbe wählt und mit dem Zweiten auf die jeweiligen RGB-Komponenten zugreifen kann.
+
+        \subsubsec{ui\_setup()}{uisetup}
+          In dieser Funktion werden mithilfe von \coderef{uimenu} die Menüleiste angelegt und mit \coderef{uicontrol} die Elemente auf dem UI erzeugt. Außerdem werden die Achsen der Figur sowohl \codeinline{off} als auch \codeinline{equal} gesetzt, und \coderef{generatecenterpieces} aufgerufen.
+
+        \subsubsec{generate\_centerpieces()}{generatecenterpieces}
+
+        \subsubsec{solve\_cube()}{solvecube}
 
     \sec{turn.m}{turn}
+      Diese Datei beinhaltet die Funktionen zum Drehen des Würfels. Dazu werden die Elemente von \codeinline{cube} je nach Drehung vertauscht. Diese Drehung wird durch \codeinline{dir} bestimmt. Der Aufbau von \codeinline{cube} entspricht dem der \coderef{facecolors}. \codeinline{dir} ist eine Zahl von 1--12. In einem \codeinline{switch}-Statement wird dann die jeweilige Rotation (siehe \autoref{grundlagen} \nameref{grundlagen}).
 
     \sec{generate\_solution.m}{generatesolution}
 
@@ -140,7 +161,6 @@
       In der ersten Zeile werden, wenn festgelegt, die RGB-Farben für die Custom-Farboption in der Reihenfolge Top-Front-Right-Back-Left-Bottom definiert. Alle weiteren Zeilen beinhalten die Presets mit zugehörigem Namen. Bei Programmstart wird diese Datei in der Funktion \coderef{loadpresets} geladen.
 
   \chap{Lösungsalgorithmus}{algorithm}
-
     \sec{Grundlagen}{grundlagen}
 
     \sec{untere und mittlere Ebene}{f2l}
@@ -150,7 +170,6 @@
     \sec{rekursiver Ansatz}{recursive}
 
   \chap{Besondere MatLab-Funktionen}{matlab}
-
     \sec{figure()}{figure}
 
     \sec{uicontrol()}{uicontrol}

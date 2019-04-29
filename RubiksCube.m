@@ -33,7 +33,7 @@ main();
 
 
     function setup()
-		
+
         possible_colors = [[1,1,1]; [1,0,0]; [0,0,1]; [1,0.6,0]; [0,1,0]; [1,1,0]];
 
         face_positions = [[[0,1,1,0], [3,3,2,2], [3,3,3,3]],  [[1,2,2,1], [3,3,2,2], [3,3,3,3]], [[2,3,3,2],[3,3,2,2],[3,3,3,3]], [[2,3,3,2],[2,2,1,1],[3,3,3,3]], [[2,3,3,2],[1,1,0,0],[3,3,3,3]], [[1,2,2,1],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[1,1,0,0],[3,3,3,3]], [[0,1,1,0],[2,2,1,1],[3,3,3,3]]; % white
@@ -79,7 +79,7 @@ main();
 		menubar_color_alt = uimenu(menubar_color, 'Label', '&Alternative', 'Callback', @update_cube_color_alt);
 		menubar_color_cus = uimenu(menubar_color, 'Label', 'C&ustom...', 'Callback', @update_cube_color_cus);
 		menubar_cube_presets = uimenu('Label', 'Cube &presets');
-		
+
 
 
         load_presets();
@@ -127,18 +127,19 @@ main();
             end
             k = k + 1;
         end
+        rgb = rgb ./ 255;
     end
 
     function load_presets()
         fid = fopen('resources.txt');
         if (fid ~= -1)
             first_line = fgetl(fid);
-            color_dialog_colors = hex2rgb(regexp(first_line, '[0-9a-fA-F]{6}', 'match'))./255;
+            color_dialog_colors = hex2rgb(regexp(first_line, '[0-9a-fA-F]{6}', 'match'));
             if (length(color_dialog_colors) ~= 6)
                 color_dialog_colors = possible_colors;
                 msgbox('Couldn''t load color definitions from resource.txt');
             end
-            
+
 
             error_list = [];
             i = 1;
@@ -166,7 +167,7 @@ main();
 						if (isempty(title))
                             title = '(empty)';
 						end
-						
+
 						uimenu(menubar_cube_presets, 'Label', title, 'UserData', i, 'Callback', @open_preset);
                         i = i + 1;
                     end
@@ -209,12 +210,12 @@ main();
             data = size(cube_presets);
             data = data(1) + 1;
             cube_presets(data, :, :) = face_color(:, :);
-			
+
 			uimenu(menubar_cube_presets, 'Label', input, 'Callback', @open_preset, 'UserData', data);
         else
             msgbox('Name can''t be empty.');
 		end
-		
+
 		uimenu(menubar_cube_presets, 'Label', '+ save new preset', 'Callback', @add_preset);
     end
 
@@ -291,7 +292,7 @@ main();
 		if (fid == -1)
 			fid = fopen('resources.txt', 'w');
         end
-        
+
         first_line = fgets(fid);
         rest = '';
         if (first_line(1) ~= '#' || length(first_line) <= 42)
@@ -302,7 +303,7 @@ main();
                 rest = [rest fgets(fid)];
             end
         end
-        
+
 		frewind(fid);
         for i = 1:6
             rgb = color_dialog_colors(i,:).*255;
@@ -440,9 +441,9 @@ main();
             end
             pause(1);
         end
-        
+
         face_color = turn(dir, face_color);
-        
+
         update_patches();
         hide_arrows(turn_arrows);
         if (button_group.UserData == 1)
