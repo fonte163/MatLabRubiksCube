@@ -476,12 +476,12 @@ main();
     function solve_cube(~, ~)
         button_solve.Enable = 'off';
 		button_solve.String = '...';
-
-        vals = tabulate(face_color(:));
-        vals2(1:6) = vals(:, 2);
         text_error.Visible = 'Off';
         text_not_solvable.Visible = 'off';
         text_solved.Visible = 'off';
+
+        vals = tabulate(face_color(:));
+        vals2(1:6) = vals(:, 2);
         if ~isequal(vals2, [8 8 8 8 8 8])
             text_error.Visible = 'On';
         else
